@@ -1,1 +1,5 @@
 This repository offers an abstraction around PECL's OAuth class which makes it even more easy to setup an OAuth Provider.
+
+Setup instructions
+
+1. Import the table definitions from the file lib/tables.sql in  your database.
