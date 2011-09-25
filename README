@@ -1,0 +1,1 @@
+This repository offers an abstraction around PECL's OAuth class which makes it even more easy to setup an OAuth Provider.
