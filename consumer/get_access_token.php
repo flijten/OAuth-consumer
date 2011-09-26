@@ -1,6 +1,8 @@
 <?php
 /**
- * @Author: Freek Lijten <freek@procurios.nl>
+ * This is a simple test file to verify the state and correctness of the Provider code.
+ *
+ * @Author	Freek Lijten
  */
 
 $accessURL	 	= 'http://oauth.freek/oauth/provider/access_token.php';

@@ -1,9 +1,9 @@
 <?php
 /**
- * @Author: Freek Lijten <freek@procurios.nl>
+ * @Author	Freek Lijten
  */
 
-$DB = new mysqli('localhost', 'root', null, 'test');
+$DB = new mysqli('localhost', 'root', null, 'oauth');
 
 function newConsumerInfo($DB)
 {

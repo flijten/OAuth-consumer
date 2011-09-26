@@ -1,8 +1,20 @@
 <?php
 /**
- * @Author: Freek Lijten <freek@procurios.nl>
- * @Package:
+ * @Author	Freek Lijten
  */
+
+
+require_once(__DIR__ . '/lib/AutoLoader.php');
+new AutoLoader();
+
+$Provider = new OAuthProviderWrapper(OAuthProviderWrapper::TOKEN_ACCESS	);
+$Provider->outputRequestToken();
+
+
+
+
+exit;
+
 $AccessTokenProvider = new AccessTokenProvider();
 
 class AccessTokenProvider
@@ -38,7 +50,7 @@ class AccessTokenProvider
 						`request_token_user_id` = '" . $DB->real_escape_string($row['request_token_user_id']) . "',
 						`scope` = '" . $DB->real_escape_string($row['scope']) . "'";
 #TODO set state of request token to consumer
-			
+
 
 			$DB->query($sql);
 			echo "oauth_token=$requestToken&oauth_token_secret=$requestTokenSecret";
