@@ -40,10 +40,10 @@ class OAuthConsumerModel extends ModelBase
 		$data 	= $result->fetch_assoc();
 		$result->close();
 
-		$OAuthConsumer->setConsumerId($data['consumer_id']);
+		$OAuthConsumer->setId($data['consumer_id']);
 		$OAuthConsumer->setConsumerKey($data['consumer_key']);
 		$OAuthConsumer->setConsumerSecret($data['consumer_secret']);
-		$OAuthConsumer->setConsumerId($data['consumer_id']);
+		$OAuthConsumer->setConsumerCreateDate($data['consumer_create_date']);
 
 		return $OAuthConsumer;
 	}
@@ -119,7 +119,7 @@ class OAuthConsumerModel extends ModelBase
 	/**
 	 * @param int $consumerId
 	 */
-	public function setConsumerId($consumerId)
+	public function setId($consumerId)
 	{
 		$this->consumerId = $consumerId;
 	}
@@ -127,7 +127,7 @@ class OAuthConsumerModel extends ModelBase
 	/**
 	 * @return int
 	 */
-	public function getConsumerId()
+	public function getId()
 	{
 		return $this->consumerId;
 	}

@@ -9,8 +9,8 @@ $requestUrl 	= 'http://oauth.freek/oauth/provider/request_token.php';
 $authorizeUrl   = 'http://oauth.freek/oauth/provider/authorize.php';
 $callbackUrl    = 'http://oauth.freek/oauth/consumer/get_access_token.php';
 
-$consumerKey 	= 'f06bd5088404d3d1bd1fedbdeb434bb8d28bae6c';
-$consumerSecret = '32416bec56b6c962105cdbb99ea190a3067bd3ed';
+$consumerKey 	= 'b26594220a7728ad931bce3232ee22d2d2520ec6';
+$consumerSecret = 'c21528fbf82c209045e85877636beddeb1ab4e48';
 
 session_start();
 try {
@@ -21,10 +21,6 @@ try {
 		$callbackUrl .
 		'&scope=all'
 	);
-
-	echo 'tokeninfo: <pre>';
-	var_dump($tokenInfo);
-	echo '</pre>';
 } catch (Exception $E) {
 	echo '<pre>';
 	var_dump($E->getMessage());
@@ -33,8 +29,13 @@ try {
 	echo '</pre>';
 }
 
+if (empty($tokenInfo['oauth_token_secret']) || empty($tokenInfo['oauth_token'])) {
+	echo '<pre>';
+	var_dump($tokenInfo);
+	echo '</pre>';
 
-exit;
+	exit;
+}
 $_SESSION['oauth_token_secret'] = $tokenInfo['oauth_token_secret'];
 
 $location = $authorizeUrl . '?oauth_token=' . $tokenInfo['oauth_token'];

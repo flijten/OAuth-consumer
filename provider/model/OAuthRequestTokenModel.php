@@ -47,6 +47,15 @@ class OAuthRequestTokenModel extends ModelBase
 
 //methods
 
+	/**
+	 * Serves as factory method. Loads the data for a request token based on the token
+	 * string.
+	 *
+	 * @static
+	 * @param 	string $token
+	 * @param 	mixed $DataStore
+	 * @return 	bool|OAuthRequestTokenModel
+	 */
 	public static function loadFromToken($token, $DataStore)
 	{
 		$sql = "SELECT *
@@ -61,9 +70,9 @@ class OAuthRequestTokenModel extends ModelBase
 
 		$data 	= $result->fetch_assoc();
 		$result->close();
-
+#TODO set fields directly?
 		$RequestToken = new OAuthRequestTokenModel($DataStore);
-		$RequestToken->setTokenId($data['request_token_id']);
+		$RequestToken->setId($data['request_token_id']);
 		$RequestToken->setToken($data['request_token_token']);
 		$RequestToken->setTokenSecret($data['request_token_secret']);
 		$RequestToken->setTokenVerificationCode($data['request_token_verification_code']);
@@ -116,7 +125,7 @@ class OAuthRequestTokenModel extends ModelBase
 					`request_token_user_id`, `request_token_date`, `request_token_consumer_key`, `request_token_callback`,
 					`request_token_scope`
 				FROM `oauth_provider_request_token`
-				WHERE `request_token_id` = '" . $this->DataStore->real_escape_string($tokenId) . "'";
+				WHERE `request_token_id` = '" . $this->DataStore->real_escape_string($this->tokenId) . "'";
 
 		$result = $this->DataStore->query($sql);
 		$data 	= $result->fetch_assoc();
@@ -233,7 +242,7 @@ class OAuthRequestTokenModel extends ModelBase
 	/**
 	 * @param int $tokenId
 	 */
-	public function setTokenId($tokenId)
+	public function setId($tokenId)
 	{
 		$this->tokenId = $tokenId;
 	}
@@ -241,7 +250,7 @@ class OAuthRequestTokenModel extends ModelBase
 	/**
 	 * @return int
 	 */
-	public function getTokenId()
+	public function getId()
 	{
 		return $this->tokenId;
 	}

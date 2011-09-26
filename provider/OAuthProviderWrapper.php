@@ -53,21 +53,53 @@ class OAuthProviderWrapper
 			$RequestToken->setTokenConsumerKey($this->Provider->consumer_key);
 			$RequestToken->setTokenCallback($_GET['oauth_callback']);
 			$RequestToken->setTokenScope($_GET['scope']);
+			#TODO userId?
 			$RequestToken->save();
 
 			echo "oauth_token=$token&oauth_token_secret=$tokenSecret&oauth_callback_confirmed=true";
 			exit;
 		} catch (Exception $E) {
-			echo $E->getMessage();
+			echo 'failed to create request token: ' .  $E->getMessage();
+			exit;
+		}
+	}
+
+	public function outputAccessToken()
+	{
+		try {
+			$RequestToken = OAuthRequestTokenModel::loadFromToken($this->Provider->token, Configuration::getDataStore());
+
+			if (!$RequestToken) {
+				#throw exception?
+			}
+
+			$token = bin2hex($this->Provider->generateToken(15, true));
+			$tokenSecret = bin2hex($this->Provider->generateToken(5, true));
+
+			$AccessToken = new OAuthAccessTokenModel(Configuration::getDataStore());
+			$AccessToken->setAccessToken($token);
+			$AccessToken->setAccessTokenSecret($tokenSecret);
+			#TODO state?
+			$AccessToken->setAccessTokenDate(time());
+			$AccessToken->setAccessTokenConsumerKey($this->Provider->consumer_key);
+			$AccessToken->setAccessTokenUserId($RequestToken->getTokenUserId());
+			$AccessToken->setAccessTokenScope($RequestToken->getTokenUserId());
+			$AccessToken->save();
+
+			echo "oauth_token=$token&oauth_token_secret=$tokenSecret";
+			exit;
+		} catch (Exception $E) {
+			echo 'failed to create access token: ' .  $E->getMessage();
 			exit;
 		}
 	}
 
 	/**
-	 * Check and store nonce
+	 * Checks if the nonce is valid and, if so, stores it in the DataStore.
+	 * Used as a callback function
 	 *
 	 * @param  $Provider
-	 * @return void
+	 * @return int
 	 */
 	public static function timestampNonceHandler($Provider)
 	{
@@ -81,7 +113,8 @@ class OAuthProviderWrapper
 			$DataStore = Configuration::getDataStore();
 		} catch (DataStoreConnectException $Exception) {
 			// Ideally this exception should be rethrown here but the internals of PECL's OAuth class throw an exception
-			// when a non-accepted return value (or no return value) is received
+			// when a non-accepted return value (or no return value) is received. This seems to be winning from exceptions
+			// thrown at this point.
 			return OAUTH_BAD_NONCE;
 		}
 
@@ -90,7 +123,7 @@ class OAuthProviderWrapper
 		}
 
 		$OAuthNonce = new OAuthNonceModel(Configuration::getDataStore());
-		$OAuthNonce->setNonce($Provider->nonce);
+		$OAuthNonce->setId($Provider->nonce);
 		$OAuthNonce->setNonceConsumerKey($Provider->consumer_key);
 		$OAuthNonce->setNonceDate(time());
 		$OAuthNonce->save();
@@ -102,6 +135,14 @@ class OAuthProviderWrapper
 		return OAUTH_BAD_NONCE;
 	}
 
+	/**
+	 * Checks if the provided consumer key is valid and sets the corresponding
+	 * consumer secret. Used as a callback function.
+	 *
+	 * @static
+	 * @param 	$Provider
+	 * @return 	int
+	 */
 	public static function consumerHandler($Provider)
 	{
 		$Provider->addRequiredParameter("oauth_callback");
@@ -111,47 +152,51 @@ class OAuthProviderWrapper
 			$DataStore = Configuration::getDataStore();
 		} catch (DataStoreConnectException $Exception) {
 			// Ideally this exception should be rethrown here but the internals of PECL's OAuth class throw an exception
-			// when a non-accepted return value (or no return value) is received
+			// when a non-accepted return value (or no return value) is received. This seems to be winning from exceptions
+			// thrown at this point.
 			return OAUTH_CONSUMER_KEY_UNKNOWN;
 		}
 
 		$OAuthConsumer = OAuthConsumerModel::loadFromConsumerKey($Provider->consumer_key, $DataStore);
 
-		if ($OAuthConsumer) {
-			$Provider->consumer_secret = $OAuthConsumer->getConsumerSecret();
-			return OAUTH_OK;
+		if (!$OAuthConsumer) {
+			#TODO ADD BLACKLISTING?
+			return OAUTH_CONSUMER_KEY_UNKNOWN;
 		}
 
-		#TODO ADD BLACKLISTING?
-		return OAUTH_CONSUMER_KEY_UNKNOWN;
+		$Provider->consumer_secret = $OAuthConsumer->getConsumerSecret();
+		return OAUTH_OK;
 	}
 
+	/**
+	 * Checks if there is token information for the provided token and sets the secret if it can be found.
+	 *
+	 * @static
+	 * @param 	$Provider
+	 * @return 	int
+	 */
 	public static function tokenHandler($Provider)
 	{
-		/**
-		 * 1. check request token exits
-		 * 2. if so try to create an access token and save it.
-		 * 3. OAuth OK or REJECT
-		 *
-		 *
-		 */
-
-		$DB = new mysqli('localhost', 'root', null, 'test');
-
-		$sql = "SELECT `request_token_secret`, `request_token_verification_code` FROM `oauth_request_token` WHERE `request_token` = '" . $Provider->token . "'";
-		$result = $DB->query($sql);
-		$row = $result->fetch_assoc();
-		$result->free();
-
-		if (empty($row)) { //no token found?
+		try {
+			$DataStore = Configuration::getDataStore();
+		} catch (DataStoreConnectException $Exception) {
+			// Ideally this exception should be rethrown here but the internals of PECL's OAuth class throw an exception
+			// when a non-accepted return value (or no return value) is received. This seems to be winning from exceptions
+			// thrown at this point.
 			return OAUTH_TOKEN_REJECTED;
 		}
 
-		if ($row['request_token_verification_code'] != $_GET['oauth_verifier']) {
+		$RequestToken = OAuthRequestTokenModel::loadFromToken($Provider->token, $DataStore);
+
+		if (!$RequestToken) {
+			return OAUTH_TOKEN_REJECTED;
+		}
+
+		if ($_GET['oauth_verifier'] != $RequestToken->getTokenVerificationCode()) {
 			return OAUTH_VERIFIER_INVALID;
 		}
 
-		$Provider->token_secret = $row['request_token_secret'];
+		$Provider->token_secret = $RequestToken->getTokenSecret();
 		return OAUTH_OK;
 	}
 }

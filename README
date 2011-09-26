@@ -1,4 +1,6 @@
 This repository offers an abstraction around PECL's OAuth class which makes it even more easy to setup an OAuth Provider.
+If you want to start using this immediately, simply follow the minimal setup instructions. If you want to
+adapt the code to suit your own datastore or framework check the customizing section.
 
 
 Notes:
@@ -6,6 +8,21 @@ Notes:
 This OAuth provider is setup as an OAuth v1.0a provider. OAuth 2.0 is currently not taken into account.
 
 
-Setup instructions:
+Minimal setup instructions:
 
-1. Import the table definitions from the file lib/tables.sql in  your database.
+1. Import the table definitions from the file lib/tables.sql in your database.
+2. Setup the endpoint scripts in your own application
+3. Setup the authorize page (see example's of how to do that in the example folder)
+
+
+Design defence:
+
+This is a playground project, I might have made design choices you wouldn't have. There is stuff I don't
+like as well.
+
+For instance the Configuration::getDataStore() is called way to much. I isolated it to OAuthProviderWrapper
+but inside it I simply need it at some places (callback functions) and I think it is prettier to have the whole
+class behave in the same manner the have it differ from function to function.
+
+Another thing I currently don't like is the save construction where getId is used forcing the models to
+have a getId function.

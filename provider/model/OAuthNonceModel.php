@@ -81,7 +81,7 @@ class OAuthNonceModel extends ModelBase
 	/**
 	 * @param string $nonce
 	 */
-	public function setNonce($nonce)
+	public function setId($nonce)
 	{
 		$this->nonce = $nonce;
 	}
@@ -89,7 +89,7 @@ class OAuthNonceModel extends ModelBase
 	/**
 	 * @return string
 	 */
-	public function getNonce()
+	public function getId()
 	{
 		return $this->nonce;
 	}

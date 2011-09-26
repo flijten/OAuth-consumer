@@ -32,12 +32,15 @@ abstract class ModelBase
 	{
 		#TODO return values? catch or rethrow exceptions?
 		#TODO tokenId isn't universal so save isn't as well.
-		if (empty($this->tokenId)) {
+		$id = $this->getId();
+		if (empty($id)) {
 			$this->create();
 		} else {
 			$this->update();
 		}
 	}
+
+	abstract protected function getId();
 
 	abstract protected function create();
 

@@ -40,13 +40,13 @@ class OAuthAccessTokenModel extends ModelBase
 	protected function create()
 	{
 		$sql = "INSERT INTO `oauth_provider_access_token`
-				SET `access_token` = '" . $this->dataSource->real_escape_string($this->accessToken) . "',
-					`access_token_secret` = '" . $this->dataSource->real_escape_string($this->accessTokenSecret) . "',
-					`access_token_state` = '" . $this->dataSource->real_escape_string($this->accessTokenState) . "',
-					`access_token_user_id` = '" . $this->dataSource->real_escape_string($this->accessTokenUserId) . "',
-					`access_token_date` = '" . $this->dataSource->real_escape_string($this->accessTokenDate) . "',
-					`access_token_consumer_key` = '" . $this->dataSource->real_escape_string($this->accessTokenConsumerKey) . "',
-					`access_token_scope` = '" . $this->dataSource->real_escape_string($this->accessTokenScope) . "'";
+				SET `access_token` = '" . $this->DataStore->real_escape_string($this->accessToken) . "',
+					`access_token_secret` = '" . $this->DataStore->real_escape_string($this->accessTokenSecret) . "',
+					`access_token_state` = '" . $this->DataStore->real_escape_string($this->accessTokenState) . "',
+					`access_token_user_id` = '" . $this->DataStore->real_escape_string($this->accessTokenUserId) . "',
+					`access_token_date` = '" . $this->DataStore->real_escape_string($this->accessTokenDate) . "',
+					`access_token_consumer_key` = '" . $this->DataStore->real_escape_string($this->accessTokenConsumerKey) . "',
+					`access_token_scope` = '" . $this->DataStore->real_escape_string($this->accessTokenScope) . "'";
 
 		if ($this->DataStore->query($sql)) {
 			$this->tokenId = $this->DataStore->insert_id;
@@ -59,7 +59,7 @@ class OAuthAccessTokenModel extends ModelBase
 	{
 		$sql = "SELECT *
 				FROM `oauth_provider_access_token
-				WHERE `access_token_id` = '" . $this->dataSource->real_escape_string($this->accessTokenId) . "'";
+				WHERE `access_token_id` = '" . $this->DataStore->real_escape_string($this->accessTokenId) . "'";
 
 		$result = $this->DataStore->query($sql);
 		$data 	= $result->fetch_assoc();
@@ -71,14 +71,14 @@ class OAuthAccessTokenModel extends ModelBase
 	protected function update()
 	{
 		$sql = "UPDATE `oauth_provider_access_token`
-				SET `access_token` = '" . $this->dataSource->real_escape_string($this->accessToken) . "',
-					`access_token_secret` = '" . $this->dataSource->real_escape_string($this->accessTokenSecret) . "',
-					`access_token_state` = '" . $this->dataSource->real_escape_string($this->accessTokenState) . "',
-					`access_token_user_id` = '" . $this->dataSource->real_escape_string($this->accessTokenUserId) . "',
-					`access_token_date` = '" . $this->dataSource->real_escape_string($this->accessTokenDate) . "',
-					`access_token_consumer_key` = '" . $this->dataSource->real_escape_string($this->accessTokenConsumerKey) . "',
-					`access_token_scope` = '" . $this->dataSource->real_escape_string($this->accessTokenScope) . "'
-				WHERE `access_token_id` = '" . $this->dataSource->real_escape_string($this->accessTokenId) . "'";
+				SET `access_token` = '" . $this->DataStore->real_escape_string($this->accessToken) . "',
+					`access_token_secret` = '" . $this->DataStore->real_escape_string($this->accessTokenSecret) . "',
+					`access_token_state` = '" . $this->DataStore->real_escape_string($this->accessTokenState) . "',
+					`access_token_user_id` = '" . $this->DataStore->real_escape_string($this->accessTokenUserId) . "',
+					`access_token_date` = '" . $this->DataStore->real_escape_string($this->accessTokenDate) . "',
+					`access_token_consumer_key` = '" . $this->DataStore->real_escape_string($this->accessTokenConsumerKey) . "',
+					`access_token_scope` = '" . $this->DataStore->real_escape_string($this->accessTokenScope) . "'
+				WHERE `access_token_id` = '" . $this->DataStore->real_escape_string($this->accessTokenId) . "'";
 
 		if (!$this->DataStore->query($sql)) {
 			#TODO throw exception?
@@ -88,7 +88,7 @@ class OAuthAccessTokenModel extends ModelBase
 	protected function delete()
 	{
 		$sql = "DELETE FROM `oauth_provider_access_token`
-				WHERE `access_token_id` = '" . $this->dataSource->real_escape_string($this->accessTokenId) . "'";
+				WHERE `access_token_id` = '" . $this->DataStore->real_escape_string($this->accessTokenId) . "'";
 
 		if (!$this->DataStore->query($sql)) {
 			#TODO throw exception?
@@ -146,17 +146,17 @@ class OAuthAccessTokenModel extends ModelBase
 	}
 
 	/**
-	 * @param int $accessTokenId
+	 * @param int $tokenId
 	 */
-	public function setAccessTokenId($accessTokenId)
+	public function setId($tokenId)
 	{
-		$this->accessTokenId = $accessTokenId;
+		$this->accessTokenId = $tokenId;
 	}
 
 	/**
 	 * @return int
 	 */
-	public function getAccessTokenId()
+	public function getId()
 	{
 		return $this->accessTokenId;
 	}
