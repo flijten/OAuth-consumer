@@ -2,22 +2,23 @@
 /**
  * This is a simple test file to verify the state and correctness of the Provider code.
  *
- * @Author	Freek Lijten
+ * @author      Freek Lijten <freek@procurios.nl>
  */
 
-$accessURL	 	= 'http://oauth.freek/oauth/provider/access_token.php';
+$apiURL	 		= 'http://oauth.freek/oauth/provider/api.php';
 $consumerKey 	= 'b26594220a7728ad931bce3232ee22d2d2520ec6';
 $consumerSecret = 'c21528fbf82c209045e85877636beddeb1ab4e48';
-
+$token			= '873cae8e638efe4d560f13e1065a28';
+$tokenSecret	= '8264cf9e1d';
 session_start();
 
 try {
-	$OAuth              = new OAuth($consumerKey, $consumerSecret);
-	$OAuth->setToken($_GET['oauth_token'], $_SESSION['oauth_token_secret']);
-	$tokenInfo          = $OAuth->getAccessToken($accessURL . '?oauth_verifier=' . $_GET['oauth_verifier']);
+	$OAuth	= new OAuth($consumerKey, $consumerSecret);
+	$OAuth->setToken($token, $tokenSecret);
+	$result = $OAuth->fetch($apiURL, array(), OAUTH_HTTP_METHOD_POST);
 
 	echo '<pre>';
-	var_dump($tokenInfo);
+	var_dump($OAuth->getLastResponse());
 	echo '</pre>';
 } catch (Exception $E) {
 	echo '<pre>';
@@ -26,4 +27,3 @@ try {
 	var_dump($OAuth->getLastResponseInfo());
 	echo '</pre>';
 }
-

@@ -5,8 +5,9 @@
 #TODO evaluate all database fields for actual usage
 class OAuthProviderWrapper
 {
-	const TOKEN_REQUEST = 0;
-	const TOKEN_ACCESS	= 1;
+	const TOKEN_REQUEST = 0; //try to get a request token
+	const TOKEN_ACCESS	= 1; //try to get an access token
+	const TOKEN_VERIFY	= 2; //try to verify an access token so an API call can be made
 
 	private $Provider;
 
@@ -29,7 +30,18 @@ class OAuthProviderWrapper
 
 		} else if ($mode == self::TOKEN_ACCESS) {
 
-			$this->Provider->tokenHandler(array($this,'tokenHandler'));
+			$this->Provider->tokenHandler(array($this,'checkRequestToken'));
+
+			try {
+				$this->Provider->checkOAuthRequest();
+			} catch (Exception $Exception) {
+				echo $Exception->getMessage();
+				exit;
+			}
+
+		} else if ($mode == self::TOKEN_VERIFY) {
+
+			$this->Provider->tokenHandler(array($this,'checkAccessToken'));
 
 			try {
 				$this->Provider->checkOAuthRequest();
@@ -175,7 +187,7 @@ class OAuthProviderWrapper
 	 * @param 	$Provider
 	 * @return 	int
 	 */
-	public static function tokenHandler($Provider)
+	public static function checkRequestToken($Provider)
 	{
 		try {
 			$DataStore = Configuration::getDataStore();
@@ -197,6 +209,34 @@ class OAuthProviderWrapper
 		}
 
 		$Provider->token_secret = $RequestToken->getTokenSecret();
+		return OAUTH_OK;
+	}
+
+	/**
+	 * Checks if there is token information for the provided access token and sets the secret if it can be found.
+	 *
+	 * @static
+	 * @param 	$Provider
+	 * @return 	int
+	 */
+	public static function checkAccessToken($Provider)
+	{
+		try {
+			$DataStore = Configuration::getDataStore();
+		} catch (DataStoreConnectException $Exception) {
+			// Ideally this exception should be rethrown here but the internals of PECL's OAuth class throw an exception
+			// when a non-accepted return value (or no return value) is received. This seems to be winning from exceptions
+			// thrown at this point.
+			return OAUTH_TOKEN_REJECTED;
+		}
+
+		$AccessToken = OAuthAccessTokenModel::loadFromToken($Provider->token, $DataStore);
+
+		if (!$AccessToken) {
+			return OAUTH_TOKEN_REJECTED;
+		}
+
+		$Provider->token_secret = $AccessToken->getAccessTokenSecret();
 		return OAUTH_OK;
 	}
 }

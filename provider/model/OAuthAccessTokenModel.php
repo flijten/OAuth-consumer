@@ -13,7 +13,7 @@ class OAuthAccessTokenModel extends ModelBase
 	/**
 	 * @var string
 	 */
-	private $accessTokenSecret		= null;
+	public $accessTokenSecret		= null;
 	/**
 	 * @var int
 	 */
@@ -34,6 +34,43 @@ class OAuthAccessTokenModel extends ModelBase
 	 * @var string
 	 */
 	private $accessTokenScope		= null;
+
+		/**
+	 * Serves as factory method. Loads the data for a request token based on the token
+	 * string.
+	 *
+	 * @static
+	 * @param 	string $token
+	 * @param 	mixed $DataStore
+	 * @return 	bool|OAuthRequestTokenModel
+	 */
+	public static function loadFromToken($token, $DataStore)
+	{
+		$sql = "SELECT *
+				FROM `oauth_provider_access_token`
+				WHERE `access_token` = '" . $DataStore->real_escape_string($token) . "'";
+
+		$result = $DataStore->query($sql);
+
+		if (!$result || $result->num_rows < 1) {
+			return false;
+		}
+
+		$data 	= $result->fetch_assoc();
+		$result->close();
+
+		$AccessToken = new OAuthAccessTokenModel($DataStore);
+		$AccessToken->accessTokenId = $data['access_token_id'];
+		$AccessToken->accessToken = $data['access_token'];
+		$AccessToken->accessTokenSecret = $data['access_token_secret'];
+		$AccessToken->accessTokenState = $data['access_token_state'];
+		$AccessToken->accessTokenUserId = $data['access_token_user_id'];
+		$AccessToken->accessTokenDate = $data['access_token_date'];
+		$AccessToken->accessTokenConsumerKey = $data['access_token_consumer_key'];
+		$AccessToken->accessTokenScope = $data['access_token_scope'];
+
+		return $AccessToken;
+	}
 
 // CRUD
 

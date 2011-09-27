@@ -70,17 +70,17 @@ class OAuthRequestTokenModel extends ModelBase
 
 		$data 	= $result->fetch_assoc();
 		$result->close();
-#TODO set fields directly?
+
 		$RequestToken = new OAuthRequestTokenModel($DataStore);
-		$RequestToken->setId($data['request_token_id']);
-		$RequestToken->setToken($data['request_token_token']);
-		$RequestToken->setTokenSecret($data['request_token_secret']);
-		$RequestToken->setTokenVerificationCode($data['request_token_verification_code']);
-		$RequestToken->setTokenUserId($data['request_token_user_id']);
-		$RequestToken->setTokenDate($data['request_token_date']);
-		$RequestToken->setTokenConsumerKey($data['request_token_consumer_key']);
-		$RequestToken->setTokenCallback($data['request_token_callback']);
-		$RequestToken->setTokenScope($data['request_token_scope']);
+		$RequestToken->tokenId = $data['request_token_id'];
+		$RequestToken->token = $data['request_token_token'];
+		$RequestToken->tokenSecret = $data['request_token_secret'];
+		$RequestToken->tokenVerificationCode = $data['request_token_verification_code'];
+		$RequestToken->tokenUserId = $data['request_token_user_id'];
+		$RequestToken->tokenDate = $data['request_token_date'];
+		$RequestToken->tokenConsumerKey = $data['request_token_consumer_key'];
+		$RequestToken->tokenCallback = $data['request_token_callback'];
+		$RequestToken->tokenScope = $data['request_token_scope'];
 
 		return $RequestToken;
 	}
