@@ -3,7 +3,7 @@
  * @author      Freek Lijten <freek@procurios.nl>
  */
 
-require_once(__DIR__ . '/lib/AutoLoader.php');
+require_once(__DIR__ . '/../../lib/AutoLoader.php');
 new AutoLoader();
 
 try {

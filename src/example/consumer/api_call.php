@@ -5,11 +5,8 @@
  * @author      Freek Lijten <freek@procurios.nl>
  */
 
-$apiURL	 		= 'http://oauth.freek/oauth/provider/api.php';
-$consumerKey 	= 'b26594220a7728ad931bce3232ee22d2d2520ec6';
-$consumerSecret = 'c21528fbf82c209045e85877636beddeb1ab4e48';
-$token			= '873cae8e638efe4d560f13e1065a28';
-$tokenSecret	= '8264cf9e1d';
+require_once __DIR__ . '/config.php';
+
 session_start();
 
 try {

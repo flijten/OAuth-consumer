@@ -5,9 +5,7 @@
  * @Author	Freek Lijten
  */
 
-$accessURL	 	= 'http://oauth.freek/oauth/provider/access_token.php';
-$consumerKey 	= 'b26594220a7728ad931bce3232ee22d2d2520ec6';
-$consumerSecret = 'c21528fbf82c209045e85877636beddeb1ab4e48';
+require_once __DIR__ . '/config.php';
 
 session_start();
 

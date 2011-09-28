@@ -9,7 +9,7 @@ if (!isset($_GET['oauth_token'])) {
 	exit;
 }
 
-require_once(__DIR__ . '/lib/AutoLoader.php');
+require_once(__DIR__ . '/../../lib/AutoLoader.php');
 new AutoLoader();
 
 $RequestToken = OAuthRequestTokenModel::loadFromToken($_GET['oauth_token'], Configuration::getDataStore());

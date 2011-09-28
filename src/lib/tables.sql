@@ -41,3 +41,28 @@ CREATE TABLE `oauth_provider_access_token` (
 `access_token_scope` text NOT NULL,
 PRIMARY KEY (`access_token_id`)
 );
+
+###########################################################################################
+#### tables below are just for the example, ignore them if you don't want to try it out ###
+###########################################################################################
+
+CREATE TABLE `user` (
+`user_id` int(11) NOT NULL AUTO_INCREMENT,
+`user_name` varchar(20) NOT NULL,
+`user_password` varchar(20) NOT NULL,
+PRIMARY KEY (`user_id`)
+);
+
+CREATE TABLE `user_messages` (
+`message_id` int(11) NOT NULL AUTO_INCREMENT,
+`user_id` int(11),
+`message_text` text NOT NULL,
+PRIMARY KEY (`message_id`)
+);
+
+CREATE TABLE `user_images` (
+`image_id` int(11) NOT NULL AUTO_INCREMENT,
+`user_id` int(11),
+`image_url` text NOT NULL,
+PRIMARY KEY (`image_id`)
+);
