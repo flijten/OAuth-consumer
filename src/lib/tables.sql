@@ -29,6 +29,7 @@ CREATE TABLE `oauth_provider_request_token` (
 `request_token_scope` text NOT NULL,
 PRIMARY KEY (`request_token_id`)
 );
+
 #TODO unique keys op tokens?
 CREATE TABLE `oauth_provider_access_token` (
 `access_token_id` int(11) NOT NULL AUTO_INCREMENT,

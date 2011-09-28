@@ -14,9 +14,7 @@ try {
 	$OAuth->setToken($token, $tokenSecret);
 	$result = $OAuth->fetch($apiURL, array(), OAUTH_HTTP_METHOD_POST);
 
-	echo '<pre>';
-	var_dump($OAuth->getLastResponse());
-	echo '</pre>';
+	echo $OAuth->getLastResponse();
 } catch (Exception $E) {
 	echo '<pre>';
 	var_dump($E->getMessage());

@@ -107,6 +107,17 @@ class OAuthProviderWrapper
 	}
 
 	/**
+	 * Returns the user Id for the currently authorized user
+	 *
+	 * @return int
+	 */
+	public function getUserId()
+	{
+		$AccessToken = OAuthAccessTokenModel::loadFromToken($this->Provider->token, Configuration::getDataStore());
+		return $AccessToken->getAccessTokenUserId();
+	}
+
+	/**
 	 * Checks if the nonce is valid and, if so, stores it in the DataStore.
 	 * Used as a callback function
 	 *

@@ -10,8 +10,8 @@ $consumerKey 	= 'b26594220a7728ad931bce3232ee22d2d2520ec6';
 $consumerSecret = 'c21528fbf82c209045e85877636beddeb1ab4e48';
 
 // Access token and secret. Change these into the ones you received at the end of the OAuth handshake cycle
-$token			= '873cae8e638efe4d560f13e1065a28';
-$tokenSecret	= '8264cf9e1d';
+$token			= '91acbc7fe8b2d224a67535b883c308';
+$tokenSecret	= 'b95db90c23';
 
 // Endpoints, at least change the urls to where you left the endpoint scripts
 $apiURL	 		= 'http://oauth.freek/oauth/src/example/provider/api.php';
