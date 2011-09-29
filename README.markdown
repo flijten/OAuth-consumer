@@ -25,9 +25,12 @@ Customizing
 ===========
 
 1. Setup/create your own schemes. Take into account that you need to cover all fields of all models
-2. overwrite the CRUD methods of all models. Also overwrite OAuthAccessTokenModel::loadFromToken,
-    OAuthRequestTokenModel::loadFromToken, OAuthAccessTokenModel::loadFromConsumerKey and OAuthAccessTokenModel::nonceExists
-    because these 3 factory methods and the checking method also interact directly with the DataStore
+2. overwrite the CRUD methods of all models. Also overwrite (because these 3 factory methods and the checking method also interact directly with the DataStore):
+ * OAuthAccessTokenModel::loadFromToken
+ * OAuthRequestTokenModel::loadFromToken
+ * OAuthAccessTokenModel::loadFromConsumerKey
+ * OAuthAccessTokenModel::nonceExists
+
 3. Setup the endpoint scripts in your own application
 4. Setup the authorize page (simple example provided in the main folder, see authorize.php)
 5. Implement oauth at the API call (simple example provided in the main folder, see api.php)
