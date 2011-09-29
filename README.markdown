@@ -10,7 +10,6 @@ Notes
 =====
 
 This OAuth provider is setup as an OAuth v1.0a provider. OAuth 2.0 is currently not taken into account.
------------------------------------------------------------------------------------------------------------------------------
 
 
 Minimal setup instructions
@@ -20,7 +19,6 @@ Minimal setup instructions
 2. Setup the endpoint scripts in your own application
 3. Setup the authorize page (simple example provided in the main folder, see authorize.php)
 4. Implement oauth at the API call (simple example provided in the main folder, see api.php)
------------------------------------------------------------------------------------------------------------------------------
 
 
 Customizing
@@ -33,7 +31,6 @@ Customizing
 3. Setup the endpoint scripts in your own application
 4. Setup the authorize page (simple example provided in the main folder, see authorize.php)
 5. Implement oauth at the API call (simple example provided in the main folder, see api.php)
------------------------------------------------------------------------------------------------------------------------------
 
 
 Design defence
@@ -48,7 +45,6 @@ class behave in the same manner the have it differ from function to function.
 
 2. The current method of having a save function in ModelBase isn't pretty as well as it forces models to
 name the getter for its unique identifier getId().
------------------------------------------------------------------------------------------------------------------------------
 
 
 Future plans
@@ -58,4 +54,3 @@ Future plans
 yet have to implement. Slowly remove TODO's.
 2. Find a better way of making this code customizable for various datasources. The overwriting of all these methods isn't
 really pretty.
------------------------------------------------------------------------------------------------------------------------------
