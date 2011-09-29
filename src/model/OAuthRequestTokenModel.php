@@ -93,7 +93,7 @@ class OAuthRequestTokenModel extends ModelBase
 	{
 		$sql = "SELECT *
 				FROM `oauth_provider_request_token`
-				WHERE `request_token_token` = '" . $DataStore->real_escape_string($token) . "'";
+				WHERE `request_token` = '" . $DataStore->real_escape_string($token) . "'";
 
 		$result = $DataStore->query($sql);
 
@@ -106,7 +106,7 @@ class OAuthRequestTokenModel extends ModelBase
 
 		$RequestToken = new OAuthRequestTokenModel($DataStore);
 		$RequestToken->tokenId = $data['request_token_id'];
-		$RequestToken->token = $data['request_token_token'];
+		$RequestToken->token = $data['request_token'];
 		$RequestToken->tokenSecret = $data['request_token_secret'];
 		$RequestToken->tokenVerificationCode = $data['request_token_verification_code'];
 		$RequestToken->tokenUserId = $data['request_token_user_id'];
@@ -129,7 +129,7 @@ class OAuthRequestTokenModel extends ModelBase
 	{
 		#TODO not all fields are required at once here, how to solve this?
 		$sql = "INSERT INTO `oauth_provider_request_token`
-				SET `request_token_token` = '" . $this->DataStore->real_escape_string($this->token) . "',
+				SET `request_token` = '" . $this->DataStore->real_escape_string($this->token) . "',
 					`request_token_secret` = '" . $this->DataStore->real_escape_string($this->tokenSecret) . "',
 					`request_token_verification_code` = '" . $this->DataStore->real_escape_string($this->tokenVerificationCode) . "',
 					`request_token_user_id` = '" . $this->DataStore->real_escape_string($this->tokenUserId) . "',
@@ -154,7 +154,7 @@ class OAuthRequestTokenModel extends ModelBase
 	protected function read()
 	{
 		#TODO error handling. What if the token Id isn't found for instance
-		$sql = "SELECT request_token_id`, `request_token_token`, `request_token_secret`, `request_token_verification_code`,
+		$sql = "SELECT request_token_id`, `request_token`, `request_token_secret`, `request_token_verification_code`,
 					`request_token_user_id`, `request_token_date`, `request_token_consumer_key`, `request_token_callback`,
 					`request_token_scope`
 				FROM `oauth_provider_request_token`
@@ -176,7 +176,7 @@ class OAuthRequestTokenModel extends ModelBase
 	{
 		#TODO not all fields are required at once here, how to solve this?
 		$sql = "UPDATE `oauth_provider_request_token`
-				SET `request_token_token` = '" . $this->DataStore->real_escape_string($this->token) . "',
+				SET `request_token` = '" . $this->DataStore->real_escape_string($this->token) . "',
 					`request_token_secret` = '" . $this->DataStore->real_escape_string($this->tokenSecret) . "',
 					`request_token_verification_code` = '" . $this->DataStore->real_escape_string($this->tokenVerificationCode) . "',
 					`request_token_user_id` = '" . $this->DataStore->real_escape_string($this->tokenUserId) . "',

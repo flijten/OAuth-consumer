@@ -97,7 +97,6 @@ class OAuthProviderWrapper
 			$RequestToken->setTokenConsumerKey($this->Provider->consumer_key);
 			$RequestToken->setTokenCallback($_GET['oauth_callback']);
 			$RequestToken->setTokenScope($_GET['scope']);
-			#TODO userId?
 			$RequestToken->save();
 
 			echo "oauth_token=$token&oauth_token_secret=$tokenSecret&oauth_callback_confirmed=true";
@@ -123,11 +122,10 @@ class OAuthProviderWrapper
 			$AccessToken = new OAuthAccessTokenModel(Configuration::getDataStore());
 			$AccessToken->setAccessToken($token);
 			$AccessToken->setAccessTokenSecret($tokenSecret);
-			#TODO state?
 			$AccessToken->setAccessTokenDate(time());
 			$AccessToken->setAccessTokenConsumerKey($this->Provider->consumer_key);
 			$AccessToken->setAccessTokenUserId($RequestToken->getTokenUserId());
-			$AccessToken->setAccessTokenScope($RequestToken->getTokenUserId());
+			$AccessToken->setAccessTokenScope($RequestToken->getTokenScope());
 			$AccessToken->save();
 
 			echo "oauth_token=$token&oauth_token_secret=$tokenSecret";
