@@ -1,6 +1,6 @@
 # This file contains the table definitions necessary for using the OAuth provider class out of the box.
 
-CREATE TABLE `oauth_consumer` (
+CREATE TABLE `oauth_provider_consumer` (
 `consumer_id` int(11) NOT NULL AUTO_INCREMENT,
 `consumer_key` varchar(40) NOT NULL,
 `consumer_secret` varchar(40) NOT NULL,

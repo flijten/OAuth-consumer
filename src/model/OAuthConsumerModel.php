@@ -68,7 +68,7 @@ class OAuthConsumerModel extends ModelBase
 		$OAuthConsumer = new OAuthConsumerModel($DataStore);
 
 		$sql = "SELECT *
-				FROM `oauth_consumer`
+				FROM `oauth_provider_consumer`
 				WHERE `consumer_key` = '" . $DataStore->real_escape_string($consumerKey) . "'";
 
 		$result = $DataStore->query($sql);
@@ -94,7 +94,7 @@ class OAuthConsumerModel extends ModelBase
 	 */
 	protected function create()
 	{
-		$sql = "INSERT INTO `oauth_consumer`
+		$sql = "INSERT INTO `oauth_provider_consumer`
 				SET `consumer_key` = '" . $this->DataStore->real_escape_string($this->consumerKey) . "
 					`consumer_secret` = '" . $this->DataStore->real_escape_string($this->consumerSecret) . "',
 					`consumer_create_date` = '" . $this->DataStore->real_escape_string($this->consumerCreateDate) . "'";
@@ -113,7 +113,7 @@ class OAuthConsumerModel extends ModelBase
 	protected function read()
 	{
 		$sql = "SELECT *
-				FROM `oauth_consumer`
+				FROM `oauth_provider_consumer`
 				WHERE `consumer_id` = '" . $this->DataStore->real_escape_string($this->consumerId) . "'";
 
 		$result = $this->DataStore->query($sql);
@@ -134,7 +134,7 @@ class OAuthConsumerModel extends ModelBase
 	 */
 	protected function update()
 	{
-		$sql = "UPDATE `oauth_consumer`
+		$sql = "UPDATE `oauth_provider_consumer`
 				SET `consumer_key` = '" . $this->DataStore->real_escape_string($this->consumerKey) . "
 					`consumer_secret` = '" . $this->DataStore->real_escape_string($this->consumerSecret) . "',
 					`consumer_create_date` = '" . $this->DataStore->real_escape_string($this->consumerCreateDate) . "
@@ -151,7 +151,7 @@ class OAuthConsumerModel extends ModelBase
 	 */
 	protected function delete()
 	{
-		$sql = "DELETE FROM `oauth_consumer`
+		$sql = "DELETE FROM `oauth_provider_consumer`
 				WHERE `consumer_id` = '" . $this->DataStore->real_escape_string($this->consumerId) . "'";
 
 		if (!$this->DataStore->query($sql)) {
