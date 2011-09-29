@@ -96,7 +96,13 @@ class OAuthProviderWrapper
 			$RequestToken->setTokenConsumerKey($this->Provider->consumer_key);
 			$RequestToken->setTokenCallback($_GET['oauth_callback']);
 			$RequestToken->setTokenScope($_GET['scope']);
-			$RequestToken->save();
+
+			try {
+				$RequestToken->save();
+			} catch (DataStoreCreateException $Exception) {
+				echo $Exception->getMessage();
+				exit;
+			}
 
 			echo "oauth_token=$token&oauth_token_secret=$tokenSecret&oauth_callback_confirmed=true";
 			exit;
@@ -125,7 +131,13 @@ class OAuthProviderWrapper
 			$AccessToken->setAccessTokenConsumerKey($this->Provider->consumer_key);
 			$AccessToken->setAccessTokenUserId($RequestToken->getTokenUserId());
 			$AccessToken->setAccessTokenScope($RequestToken->getTokenScope());
-			$AccessToken->save();
+
+			try {
+				$AccessToken->save();
+			} catch (DataStoreCreateException $Exception) {
+				echo $Exception->getMessage();
+				exit;
+			}
 
 			echo "oauth_token=$token&oauth_token_secret=$tokenSecret";
 			exit;
@@ -178,12 +190,14 @@ class OAuthProviderWrapper
 		$OAuthNonce->setId($Provider->nonce);
 		$OAuthNonce->setNonceConsumerKey($Provider->consumer_key);
 		$OAuthNonce->setNonceDate(time());
-		$OAuthNonce->save();
 
-		if (true) {
-			return OAUTH_OK;
+		try {
+			$OAuthNonce->save();
+		} catch (DataStoreCreateException $Exception) {
+			return OAUTH_BAD_NONCE;
 		}
-		return OAUTH_BAD_NONCE;
+
+		return OAUTH_OK;
 	}
 
 	/**

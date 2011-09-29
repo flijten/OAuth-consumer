@@ -39,12 +39,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($_POST['allow'])) {
 
 	$RequestToken->setTokenVerificationCode($verificationCode);
 	$RequestToken->setTokenUserId($row['user_id']);
-	$RequestToken->save();
 
-	if (true) {
-		#TODO save must return something probably
-		header( 'location: ' . $RequestToken->getTokenCallback() . '?oauth_token=' . $RequestToken->getToken() . '&oauth_verifier=' . $verificationCode );
+	try {
+		$RequestToken->save();
+	} catch (DataStoreUpdateException $Exception) {
+		echo $Exception->getMessage();
+		exit;
 	}
+
+	header( 'location: ' . $RequestToken->getTokenCallback() . '?oauth_token=' . $RequestToken->getToken() . '&oauth_verifier=' . $verificationCode );
 }
 
 echo "
