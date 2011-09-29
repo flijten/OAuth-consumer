@@ -69,14 +69,15 @@ class OAuthAccessTokenModel extends ModelBase
 	 */
 	private $accessTokenScope		= null;
 
-		/**
+	/**
 	 * Serves as factory method. Loads the data for a request token based on the token
 	 * string.
 	 *
 	 * @static
-	 * @param 	string $token
-	 * @param 	mixed $DataStore
-	 * @return 	bool|OAuthRequestTokenModel
+	 * @throws 	DataStoreReadException
+	 * @param 	$token
+	 * @param 	$DataStore
+	 * @return 	OAuthAccessTokenModel
 	 */
 	public static function loadFromToken($token, $DataStore)
 	{
@@ -87,7 +88,7 @@ class OAuthAccessTokenModel extends ModelBase
 		$result = $DataStore->query($sql);
 
 		if (!$result || $result->num_rows < 1) {
-			return false;
+			throw new DataStoreReadException("Couldn't read the access token data from the datastore");
 		}
 
 		$data 	= $result->fetch_assoc();
@@ -108,6 +109,10 @@ class OAuthAccessTokenModel extends ModelBase
 
 // CRUD
 
+	/**
+	 * @throws DataStoreCreateException
+	 * @return void
+	 */
 	protected function create()
 	{
 		$sql = "INSERT INTO `oauth_provider_access_token`
@@ -122,10 +127,14 @@ class OAuthAccessTokenModel extends ModelBase
 		if ($this->DataStore->query($sql)) {
 			$this->tokenId = $this->DataStore->insert_id;
 		} else {
-			#TODO throw exception?
+			throw new DataStoreCreateException("Couldn't save the access token to the datastore");
 		}
 	}
 
+	/**
+	 * @throws DataStoreReadException
+	 * @return
+	 */
 	protected function read()
 	{
 		$sql = "SELECT *
@@ -133,12 +142,21 @@ class OAuthAccessTokenModel extends ModelBase
 				WHERE `access_token_id` = '" . $this->DataStore->real_escape_string($this->accessTokenId) . "'";
 
 		$result = $this->DataStore->query($sql);
+
+		if (!$result) {
+			throw new DataStoreReadException("Couldn't read the access token data from the datastore");
+		}
+
 		$data 	= $result->fetch_assoc();
 		$result->close();
 
 		return $data;
 	}
 
+	/**
+	 * @throws DataStoreUpdateException
+	 * @return void
+	 */
 	protected function update()
 	{
 		$sql = "UPDATE `oauth_provider_access_token`
@@ -152,17 +170,21 @@ class OAuthAccessTokenModel extends ModelBase
 				WHERE `access_token_id` = '" . $this->DataStore->real_escape_string($this->accessTokenId) . "'";
 
 		if (!$this->DataStore->query($sql)) {
-			#TODO throw exception?
+			throw new DataStoreUpdateException("Couldn't update the access token to the datastore");
 		}
 	}
 
+	/**
+	 * @throws DataStoreDeleteException
+	 * @return void
+	 */
 	protected function delete()
 	{
 		$sql = "DELETE FROM `oauth_provider_access_token`
 				WHERE `access_token_id` = '" . $this->DataStore->real_escape_string($this->accessTokenId) . "'";
 
 		if (!$this->DataStore->query($sql)) {
-			#TODO throw exception?
+			throw new DataStoreDeleteException("Couldn't delete the access token from the datastore");
 		}
 	}
 

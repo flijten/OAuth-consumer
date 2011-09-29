@@ -56,6 +56,13 @@ class OAuthConsumerModel extends ModelBase
 
 // CRUD functions
 
+	/**
+	 * @static
+	 * @throws 	DataStoreReadException
+	 * @param 	$consumerKey
+	 * @param 	$DataStore
+	 * @return 	OAuthConsumerModel
+	 */
 	public static function loadFromConsumerKey($consumerKey, $DataStore)
 	{
 		$OAuthConsumer = new OAuthConsumerModel($DataStore);
@@ -67,7 +74,7 @@ class OAuthConsumerModel extends ModelBase
 		$result = $DataStore->query($sql);
 
 		if (!$result || $result->num_rows < 1) {
-			return false;
+			throw new DataStoreReadException("Couldn't read the consumer data from the datastore");
 		}
 
 		$data 	= $result->fetch_assoc();
@@ -81,6 +88,10 @@ class OAuthConsumerModel extends ModelBase
 		return $OAuthConsumer;
 	}
 
+	/**
+	 * @throws DataStoreCreateException
+	 * @return void
+	 */
 	protected function create()
 	{
 		$sql = "INSERT INTO `oauth_consumer`
@@ -91,10 +102,14 @@ class OAuthConsumerModel extends ModelBase
 		if ($this->DataStore->query($sql)) {
 			$this->tokenId = $this->DataStore->insert_id;
 		} else {
-			#TODO throw exception?
+			throw new DataStoreCreateException("Couldn't save the consumer to the datastore");
 		}
 	}
 
+	/**
+	 * @throws DataStoreReadException
+	 * @return
+	 */
 	protected function read()
 	{
 		$sql = "SELECT *
@@ -102,12 +117,21 @@ class OAuthConsumerModel extends ModelBase
 				WHERE `consumer_id` = '" . $this->DataStore->real_escape_string($this->consumerId) . "'";
 
 		$result = $this->DataStore->query($sql);
+
+		if (!$result) {
+			throw new DataStoreReadException("Couldn't read the consumer data from the datastore");
+		}
+
 		$data 	= $result->fetch_assoc();
 		$result->close();
 
 		return $data;
 	}
 
+	/**
+	 * @throws DataStoreUpdateException
+	 * @return void
+	 */
 	protected function update()
 	{
 		$sql = "UPDATE `oauth_consumer`
@@ -117,17 +141,21 @@ class OAuthConsumerModel extends ModelBase
 				WHERE `consumer_id` = '" . $this->DataStore->real_escape_string($this->consumerId) . "'";
 
 		if (!$this->DataStore->query($sql)) {
-			#TODO throw exception?
+			throw new DataStoreUpdateException("Couldn't update the consumer to the datastore");
 		}
 	}
 
+	/**
+	 * @throws DataStoreDeleteException
+	 * @return void
+	 */
 	protected function delete()
 	{
 		$sql = "DELETE FROM `oauth_consumer`
 				WHERE `consumer_id` = '" . $this->DataStore->real_escape_string($this->consumerId) . "'";
 
 		if (!$this->DataStore->query($sql)) {
-			#TODO throw exception?
+			throw new DataStoreDeleteException("Couldn't delete the consumer from the datastore");
 		}
 	}
 

@@ -51,6 +51,12 @@ class OAuthNonceModel extends ModelBase
 
 // CRUD
 
+	/**
+	 * @static
+	 * @param 	string $nonce
+	 * @param 	$DataStore
+	 * @return 	bool
+	 */
 	public static function nonceExists($nonce, $DataStore)
 	{
 		$sql = "SELECT 1
@@ -62,6 +68,10 @@ class OAuthNonceModel extends ModelBase
 		return $result->num_rows > 0;
 	}
 
+	/**
+	 * @throws DataStoreCreateException
+	 * @return void
+	 */
 	protected function create()
 	{
 		$sql = "INSERT INTO `oauth_provider_nonce`
@@ -70,10 +80,14 @@ class OAuthNonceModel extends ModelBase
 					`nonce_date` = '" . $this->DataStore->real_escape_string($this->nonceDate) . "'";
 
 		if (!$this->DataStore->query($sql)) {
-			#TODO throw exception?
+			throw new DataStoreCreateException("Couldn't save the nonce to the datastore");
 		}
 	}
 
+	/**
+	 * @throws DataStoreReadException
+	 * @return array
+	 */
 	protected function read()
 	{
 		$sql = "SELECT *
@@ -81,12 +95,21 @@ class OAuthNonceModel extends ModelBase
 				WHERE `nonce` = '" . $this->DataStore->real_escape_string($this->nonce) . "'";
 
 		$result = $this->DataStore->query($sql);
+
+		if (!$result) {
+			throw new DataStoreReadException("Couldn't read the nonce data from the datastore");
+		}
+
 		$data 	= $result->fetch_assoc();
 		$result->close();
 
 		return $data;
 	}
 
+	/**
+	 * @throws DataStoreUpdateException
+	 * @return void
+	 */
 	protected function update()
 	{
 		$sql = "UPDATE `oauth_provider_nonce`
@@ -95,17 +118,21 @@ class OAuthNonceModel extends ModelBase
 				WHERE `nonce` = '" . $this->DataStore->real_escape_string($this->nonce) . "'";
 
 		if (!$this->DataStore->query($sql)) {
-			#TODO throw exception?
+			throw new DataStoreUpdateException("Couldn't update the nonce to the datastore");
 		}
 	}
 
+	/**
+	 * @throws DataStoreDeleteException
+	 * @return void
+	 */
 	protected function delete()
 	{
 		$sql = "DELETE FROM `oauth_provider_nonce`
 				WHERE `nonce` = '" . $this->DataStore->real_escape_string($this->nonce) . "'";
 
 		if (!$this->DataStore->query($sql)) {
-			#TODO throw exception?
+			throw new DataStoreDeleteException("Couldn't delete the nonce from the datastore");
 		}
 	}
 

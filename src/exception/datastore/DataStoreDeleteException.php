@@ -30,56 +30,11 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * @author	Freek Lijten
- * @license BSD License
+ * @author		Freek Lijten
+ * @license 	BSD License
  */
 
-#TODO return $this in setters for chaining?
-
-abstract class ModelBase
+class DataStoreDeleteException extends Exception
 {
-	/**
-	 * Should be some sort of DB object. This is field exists so it is easy to start using a different
-	 * storage method than MySQL. Simply overwriting the CRUD functions of this object and injecting
-	 * the object with the correct dataStore object should suffice.
-	 *
-	 * @var MySQLi|mixed default is a MySQLi object
-	 */
-	protected $DataStore			= null;
 
-	/**
-	 * Instantiate object and set $DataStore field
-	 *
-	 * @param $DataStore
-	 */
-	public function __construct($DataStore)
-	{
-		$this->DataStore = $DataStore;
-	}
-
-	/**
-	 * Writes the values of the class fields to the dataStore. If this->tokenId is already set, an
-	 * update is performed, else a new record is created.
-	 *
-	 * @return void
-	 */
-	public function save()
-	{
-		$id = $this->getId();
-		if (empty($id)) {
-			return $this->create();
-		} else {
-			return $this->update();
-		}
-	}
-
-	abstract protected function getId();
-
-	abstract protected function create();
-
-	abstract protected function read();
-
-	abstract protected function update();
-
-	abstract protected function delete();
 }

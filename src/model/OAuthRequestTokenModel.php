@@ -33,8 +33,6 @@
  * @author	Freek Lijten
  * @license BSD License
  */
-#TODO comments
-#TODO return $this in setters for chaining?
 
 class OAuthRequestTokenModel extends ModelBase
 {
@@ -85,9 +83,10 @@ class OAuthRequestTokenModel extends ModelBase
 	 * string.
 	 *
 	 * @static
-	 * @param 	string $token
-	 * @param 	mixed $DataStore
-	 * @return 	bool|OAuthRequestTokenModel
+	 * @throws 	DataStoreReadException
+	 * @param 	$token
+	 * @param 	$DataStore
+	 * @return 	OAuthRequestTokenModel
 	 */
 	public static function loadFromToken($token, $DataStore)
 	{
@@ -98,7 +97,7 @@ class OAuthRequestTokenModel extends ModelBase
 		$result = $DataStore->query($sql);
 
 		if (!$result || $result->num_rows < 1) {
-			return false;
+			throw new DataStoreReadException("Couldn't read the request token data from the datastore");
 		}
 
 		$data 	= $result->fetch_assoc();
@@ -123,11 +122,11 @@ class OAuthRequestTokenModel extends ModelBase
 	/**
 	 * Creates a new row for this Access token in the datastore. MUST set the field tokenId here.
 	 *
+	 * @throws DataStoreReadException
 	 * @return void
 	 */
 	protected function create()
 	{
-		#TODO not all fields are required at once here, how to solve this?
 		$sql = "INSERT INTO `oauth_provider_request_token`
 				SET `request_token` = '" . $this->DataStore->real_escape_string($this->token) . "',
 					`request_token_secret` = '" . $this->DataStore->real_escape_string($this->tokenSecret) . "',
@@ -141,19 +140,18 @@ class OAuthRequestTokenModel extends ModelBase
 		if ($this->DataStore->query($sql)) {
 			$this->tokenId = $this->DataStore->insert_id;
 		} else {
-			#TODO throw exception?
+			throw new DataStoreReadException("Couldn't create the request token data in the datastore");
 		}
 	}
 
 	/**
 	 * Reads and returns the data for the access token with id $tokenId
 	 *
-	 * @param 	$tokenId
+	 * @throws 	DataStoreReadException
 	 * @return 	array $data  An associative array with the data for $tokenId
 	 */
 	protected function read()
 	{
-		#TODO error handling. What if the token Id isn't found for instance
 		$sql = "SELECT request_token_id`, `request_token`, `request_token_secret`, `request_token_verification_code`,
 					`request_token_user_id`, `request_token_date`, `request_token_consumer_key`, `request_token_callback`,
 					`request_token_scope`
@@ -161,6 +159,11 @@ class OAuthRequestTokenModel extends ModelBase
 				WHERE `request_token_id` = '" . $this->DataStore->real_escape_string($this->tokenId) . "'";
 
 		$result = $this->DataStore->query($sql);
+
+		if (!$result) {
+			throw new DataStoreReadException("Couldn't read the request token data from the datastore");
+		}
+
 		$data 	= $result->fetch_assoc();
 		$result->close();
 
@@ -170,11 +173,11 @@ class OAuthRequestTokenModel extends ModelBase
 	/**
 	 * Updates the row in the datastore for this OAuth access token.
 	 *
+	 * @throws DataStoreReadException
 	 * @return void
 	 */
 	protected function update()
 	{
-		#TODO not all fields are required at once here, how to solve this?
 		$sql = "UPDATE `oauth_provider_request_token`
 				SET `request_token` = '" . $this->DataStore->real_escape_string($this->token) . "',
 					`request_token_secret` = '" . $this->DataStore->real_escape_string($this->tokenSecret) . "',
@@ -187,13 +190,14 @@ class OAuthRequestTokenModel extends ModelBase
 				WHERE `request_token_id` = '" . $this->DataStore->real_escape_string($this->tokenId) . "'";
 
 		if (!$this->DataStore->query($sql)) {
-			#TODO throw exception?
+			throw new DataStoreReadException("Couldn't update the request token data in the datastore");
 		}
 	}
 
 	/**
-	 * Deletes the row in the datastore for this OAuth access token.
+	 * Deletes the row in the datastore for this OAuth access token
 	 *
+	 * @throws DataStoreReadException
 	 * @return void
 	 */
 	protected function delete()
@@ -202,7 +206,7 @@ class OAuthRequestTokenModel extends ModelBase
 				WHERE `request_token_id` = '" . $this->DataStore->real_escape_string($this->tokenId) . "'";
 
 		if (!$this->DataStore->query($sql)) {
-			#TODO throw exception?
+			throw new DataStoreReadException("Couldn't delete the request token data in the datastore");
 		}
 	}
 

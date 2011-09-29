@@ -34,7 +34,6 @@
  * @license BSD License
  */
 
-#TODO evaluate all database fields for actual usage
 class OAuthProviderWrapper
 {
 	const TOKEN_REQUEST = 0; //try to get a request token
@@ -182,7 +181,6 @@ class OAuthProviderWrapper
 		$OAuthNonce->save();
 
 		if (true) {
-			#TODO save should return something or throw exceptions
 			return OAUTH_OK;
 		}
 		return OAUTH_BAD_NONCE;
@@ -213,7 +211,7 @@ class OAuthProviderWrapper
 		$OAuthConsumer = OAuthConsumerModel::loadFromConsumerKey($Provider->consumer_key, $DataStore);
 
 		if (!$OAuthConsumer) {
-			#TODO ADD BLACKLISTING?
+			#TODO add blacklisting and/or throttling?
 			return OAUTH_CONSUMER_KEY_UNKNOWN;
 		}
 
