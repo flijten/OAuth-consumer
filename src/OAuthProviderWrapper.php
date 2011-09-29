@@ -118,8 +118,10 @@ class OAuthProviderWrapper
 			$RequestToken = OAuthRequestTokenModel::loadFromToken($this->Provider->token, Configuration::getDataStore());
 
 			if (!$RequestToken) {
-				#throw exception?
+				#TODO throw exception?
 			}
+			#TODO the request token must be verified
+			#TODO consumer key provided ($this->Provider->consumer_key) must be the consumer key belonging to $RequestToken
 
 			$token = bin2hex($this->Provider->generateToken(15, true));
 			$tokenSecret = bin2hex($this->Provider->generateToken(5, true));
@@ -134,6 +136,7 @@ class OAuthProviderWrapper
 
 			try {
 				$AccessToken->save();
+				#TODO, if saved, remove request token from database (or invalidate it somehow)
 			} catch (DataStoreCreateException $Exception) {
 				echo $Exception->getMessage();
 				exit;

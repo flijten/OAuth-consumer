@@ -49,6 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($_POST['allow'])) {
 
 	header( 'location: ' . $RequestToken->getTokenCallback() . '?oauth_token=' . $RequestToken->getToken() . '&oauth_verifier=' . $verificationCode );
 }
+#TODO if deny, delete request token!
 
 echo "
 	<form method='post' action='?oauth_token=" . $RequestToken->getToken() . "'>

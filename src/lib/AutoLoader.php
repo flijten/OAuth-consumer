@@ -95,6 +95,10 @@ class AutoLoader
 		$index = array(
 			'ProviderException'			=> 'ProviderException.php',
 			'DataStoreConnectException'	=> 'datastore/DataStoreConnectException.php',
+			'DataStoreCreateException'	=> 'datastore/DataStoreCreateException.php',
+			'DataStoreReadException'	=> 'datastore/DataStoreReadException.php',
+			'DataStoreUpdateException'	=> 'datastore/DataStoreUpdateException.php',
+			'DataStoreDeleteException'	=> 'datastore/DataStoreDeleteException.php',
 		);
 
 		$classPath = '';

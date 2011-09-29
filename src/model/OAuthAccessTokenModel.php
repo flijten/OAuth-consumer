@@ -98,7 +98,6 @@ class OAuthAccessTokenModel extends ModelBase
 		$AccessToken->accessTokenId = $data['access_token_id'];
 		$AccessToken->accessToken = $data['access_token'];
 		$AccessToken->accessTokenSecret = $data['access_token_secret'];
-		$AccessToken->accessTokenState = $data['access_token_state'];
 		$AccessToken->accessTokenUserId = $data['access_token_user_id'];
 		$AccessToken->accessTokenDate = $data['access_token_date'];
 		$AccessToken->accessTokenConsumerKey = $data['access_token_consumer_key'];
@@ -118,7 +117,6 @@ class OAuthAccessTokenModel extends ModelBase
 		$sql = "INSERT INTO `oauth_provider_access_token`
 				SET `access_token` = '" . $this->DataStore->real_escape_string($this->accessToken) . "',
 					`access_token_secret` = '" . $this->DataStore->real_escape_string($this->accessTokenSecret) . "',
-					`access_token_state` = '" . $this->DataStore->real_escape_string($this->accessTokenState) . "',
 					`access_token_user_id` = '" . $this->DataStore->real_escape_string($this->accessTokenUserId) . "',
 					`access_token_date` = '" . $this->DataStore->real_escape_string($this->accessTokenDate) . "',
 					`access_token_consumer_key` = '" . $this->DataStore->real_escape_string($this->accessTokenConsumerKey) . "',
@@ -162,7 +160,6 @@ class OAuthAccessTokenModel extends ModelBase
 		$sql = "UPDATE `oauth_provider_access_token`
 				SET `access_token` = '" . $this->DataStore->real_escape_string($this->accessToken) . "',
 					`access_token_secret` = '" . $this->DataStore->real_escape_string($this->accessTokenSecret) . "',
-					`access_token_state` = '" . $this->DataStore->real_escape_string($this->accessTokenState) . "',
 					`access_token_user_id` = '" . $this->DataStore->real_escape_string($this->accessTokenUserId) . "',
 					`access_token_date` = '" . $this->DataStore->real_escape_string($this->accessTokenDate) . "',
 					`access_token_consumer_key` = '" . $this->DataStore->real_escape_string($this->accessTokenConsumerKey) . "',

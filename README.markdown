@@ -61,3 +61,5 @@ the exceptions inside the models for instance.
 3. Clean up code. There is code left from idea's which I don't find necessary anymore as well as code from ideas
 I yet have to implement. Slowly remove TODO's.
 4. Do something with the points at design defence :D
+5. According to http://tools.ietf.org/html/rfc5849#page-32 my secrets should probably be longer, In fact I should consider everything in chapter 4.
+6. Correct responses according to: http://oauth.net/core/1.0a/#http_codes
