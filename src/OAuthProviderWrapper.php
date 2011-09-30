@@ -256,6 +256,8 @@ class OAuthProviderWrapper
 
 		$RequestToken = OAuthRequestTokenModel::loadFromToken($Provider->token, $DataStore);
 
+		#TODO consumer key provided ($this->Provider->consumer_key) must be the consumer key belonging to $RequestToken
+
 		if (!$RequestToken) {
 			return OAUTH_TOKEN_REJECTED;
 		}
@@ -287,6 +289,8 @@ class OAuthProviderWrapper
 		}
 
 		$AccessToken = OAuthAccessTokenModel::loadFromToken($Provider->token, $DataStore);
+
+		#TODO consumer key provided ($this->Provider->consumer_key) must be the consumer key belonging to $RequestToken
 
 		if (!$AccessToken) {
 			return OAUTH_TOKEN_REJECTED;
