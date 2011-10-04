@@ -24,6 +24,10 @@ Minimal setup instructions
 Customizing
 ===========
 
+NB: This section is here purely to have the example work with the database abstraction of your choice. If you want to take this
+repositories code and use it in a live implementation you're by all means welcome, but you need to use you're common sense to
+change the code to fit inside your application.
+
 1. Setup/create your own schemes. Take into account that you need to cover all fields of all models
 2. overwrite the CRUD methods of all models. Also overwrite (because these 3 factory methods and the checking method also interact directly with the DataStore):
  * OAuthAccessTokenModel::loadFromToken
