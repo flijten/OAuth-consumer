@@ -4,7 +4,8 @@
  */
 
 $DB = new mysqli('localhost', 'root', null, 'oauth');
-
+#TODO use consumer model
+#TODO smarter method for generating key and secret, generateToken for instance :/
 function newConsumerInfo($DB)
 {
 	$handle = fopen('/dev/urandom', 'rb');
