@@ -39,12 +39,12 @@ Customizing
 Design defence
 ==============
 
-This is a playground project, I might have made design choices you wouldn't have. There is stuff I don't
-like as well:
+This is a playground project, I might have made design choices you wouldn't have. I am also trying out stuff
+I might dislike a week from now. There is stuff I don't like already as well:
 
 1. Configuration::getDataStore() is called way to much. I isolated it to OAuthProviderWrapper
 but inside it I simply need it at some places (callback functions) and I think it is prettier to have the whole
-class behave in the same manner the have it differ from function to function.
+class behave in the same manner then have it differ from function to function.
 
 2. The current method of having a save function in ModelBase isn't pretty as well as it forces models to
 name the getter for its unique identifier getId().

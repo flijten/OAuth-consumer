@@ -83,81 +83,104 @@ class OAuthProviderWrapper
 		}
 	}
 
+	/**
+	 * Generates and outputs a request token
+	 * @throws ProviderException
+	 */
 	public function outputRequestToken()
 	{
+		$token = bin2hex($this->Provider->generateToken(15, true));
+		$tokenSecret = bin2hex($this->Provider->generateToken(5, true));
+
+		$RequestToken = new OAuthRequestTokenModel(Configuration::getDataStore());
+		$RequestToken->setToken($token);
+		$RequestToken->setTokenSecret($tokenSecret);
+		$RequestToken->setTokenDate(time());
+		$RequestToken->setTokenConsumerKey($this->Provider->consumer_key);
+		$RequestToken->setTokenCallback($_GET['oauth_callback']);
+		$RequestToken->setTokenScope($_GET['scope']);
+
 		try {
-			$token = bin2hex($this->Provider->generateToken(15, true));
-			$tokenSecret = bin2hex($this->Provider->generateToken(5, true));
-
-			$RequestToken = new OAuthRequestTokenModel(Configuration::getDataStore());
-			$RequestToken->setToken($token);
-			$RequestToken->setTokenSecret($tokenSecret);
-			$RequestToken->setTokenDate(time());
-			$RequestToken->setTokenConsumerKey($this->Provider->consumer_key);
-			$RequestToken->setTokenCallback($_GET['oauth_callback']);
-			$RequestToken->setTokenScope($_GET['scope']);
-
-			try {
-				$RequestToken->save();
-			} catch (DataStoreCreateException $Exception) {
-				echo $Exception->getMessage();
-				exit;
-			}
-
-			echo "oauth_token=$token&oauth_token_secret=$tokenSecret&oauth_callback_confirmed=true";
-			exit;
-		} catch (Exception $E) {
-			echo 'failed to create request token: ' .  $E->getMessage();
-			exit;
+			$RequestToken->save();
+		} catch (DataStoreCreateException $Exception) {
+			throw new ProviderException($Exception->getMessage());
 		}
+
+		echo "oauth_token=$token&oauth_token_secret=$tokenSecret&oauth_callback_confirmed=true";
+		exit;
 	}
 
+	/**
+	 * Tests if the provided RequestToken meets the RFC specs and if so creates and outputs an AccessToken
+	 *
+	 * @throws ProviderException
+	 */
 	public function outputAccessToken()
 	{
 		try {
 			$RequestToken = OAuthRequestTokenModel::loadFromToken($this->Provider->token, Configuration::getDataStore());
-
-			if (!$RequestToken) {
-				#TODO throw exception?
-			}
-			#TODO the request token must be verified
-			#TODO consumer key provided ($this->Provider->consumer_key) must be the consumer key belonging to $RequestToken
-
-			$token = bin2hex($this->Provider->generateToken(15, true));
-			$tokenSecret = bin2hex($this->Provider->generateToken(5, true));
-
-			$AccessToken = new OAuthAccessTokenModel(Configuration::getDataStore());
-			$AccessToken->setAccessToken($token);
-			$AccessToken->setAccessTokenSecret($tokenSecret);
-			$AccessToken->setAccessTokenDate(time());
-			$AccessToken->setAccessTokenConsumerKey($this->Provider->consumer_key);
-			$AccessToken->setAccessTokenUserId($RequestToken->getTokenUserId());
-			$AccessToken->setAccessTokenScope($RequestToken->getTokenScope());
-
-			try {
-				$AccessToken->save();
-				#TODO, if saved, remove request token from database (or invalidate it somehow)
-			} catch (DataStoreCreateException $Exception) {
-				echo $Exception->getMessage();
-				exit;
-			}
-
-			echo "oauth_token=$token&oauth_token_secret=$tokenSecret";
-			exit;
-		} catch (Exception $E) {
-			echo 'failed to create access token: ' .  $E->getMessage();
-			exit;
+		} catch (DataStoreReadException $Exception) {
+			throw new ProviderException("Invalid request token");
 		}
+
+		//The consumer must be the same as the one this request token was originally issued for
+		if ($RequestToken->getTokenConsumerKey() != $this->Provider->consumer_key) {
+			throw new ProviderException("Invalid consumer key");
+		}
+
+		//The request token must be authorised
+		$verificationCode = $RequestToken->getTokenVerificationCode();
+		if (empty($verificationCode)) {
+			throw new ProviderException("The supplied request token isn't authorised yet");
+		}
+
+		//The verification code must be correct
+		if ($this->Provider->verifier != $verificationCode) {
+			throw new ProviderException("Invalid verification");
+		}
+
+		$token = bin2hex($this->Provider->generateToken(15, true));
+		$tokenSecret = bin2hex($this->Provider->generateToken(5, true));
+
+		$AccessToken = new OAuthAccessTokenModel(Configuration::getDataStore());
+		$AccessToken->setAccessToken($token);
+		$AccessToken->setAccessTokenSecret($tokenSecret);
+		$AccessToken->setAccessTokenDate(time());
+		$AccessToken->setAccessTokenConsumerKey($this->Provider->consumer_key);
+		$AccessToken->setAccessTokenUserId($RequestToken->getTokenUserId());
+		$AccessToken->setAccessTokenScope($RequestToken->getTokenScope());
+
+		try {
+			$AccessToken->save();
+		} catch (DataStoreCreateException $Exception) {
+			throw new ProviderException($Exception->getMessage());
+		}
+
+		//The access token was saved. This means the request token that was exchanged for it can be deleted.
+		try {
+			$RequestToken->delete();
+		} catch (DataStoreDeleteException $Exception) {
+			throw new ProviderException($Exception->getMessage());
+		}
+
+		//all is well, output token
+		echo "oauth_token=$token&oauth_token_secret=$tokenSecret";
+		exit;
 	}
 
 	/**
 	 * Returns the user Id for the currently authorized user
 	 *
+	 * @throws ProviderException
 	 * @return int
 	 */
 	public function getUserId()
 	{
-		$AccessToken = OAuthAccessTokenModel::loadFromToken($this->Provider->token, Configuration::getDataStore());
+		try {
+			$AccessToken = OAuthAccessTokenModel::loadFromToken($this->Provider->token, Configuration::getDataStore());
+		} catch (DataStoreReadException $Exception) {
+			throw new ProviderException("Couldn't find a user id corresponding with current token information");
+		}
 		return $AccessToken->getAccessTokenUserId();
 	}
 
@@ -245,18 +268,26 @@ class OAuthProviderWrapper
 	 */
 	public static function checkRequestToken($Provider)
 	{
+		// Ideally this function should rethrow exceptions, but the internals of PECL's OAuth class
+		// Expect one of the OAUTH constants to be returned. When left out an exception is thrown, negating
+		// out exception thrown here.
+
 		try {
 			$DataStore = Configuration::getDataStore();
 		} catch (DataStoreConnectException $Exception) {
-			// Ideally this exception should be rethrown here but the internals of PECL's OAuth class throw an exception
-			// when a non-accepted return value (or no return value) is received. This seems to be winning from exceptions
-			// thrown at this point.
 			return OAUTH_TOKEN_REJECTED;
 		}
 
-		$RequestToken = OAuthRequestTokenModel::loadFromToken($Provider->token, $DataStore);
+		try {
+			$RequestToken = OAuthRequestTokenModel::loadFromToken($Provider->token, $DataStore);
+		} catch (DataStoreReadException $Exception) {
+			return OAUTH_TOKEN_REJECTED;
+		}
 
-		#TODO consumer key provided ($this->Provider->consumer_key) must be the consumer key belonging to $RequestToken
+		//The consumer must be the same as the one this request token was originally issued for
+		if ($RequestToken->getTokenConsumerKey() != $Provider->consumer_key) {
+			return OAUTH_TOKEN_REJECTED;
+		}
 
 		if (!$RequestToken) {
 			return OAUTH_TOKEN_REJECTED;
@@ -279,20 +310,25 @@ class OAuthProviderWrapper
 	 */
 	public static function checkAccessToken($Provider)
 	{
+		// Ideally this function should rethrow exceptions, but the internals of PECL's OAuth class
+		// Expect one of the OAUTH constants to be returned. When left out an exception is thrown, negating
+		// out exception thrown here.
+
 		try {
 			$DataStore = Configuration::getDataStore();
 		} catch (DataStoreConnectException $Exception) {
-			// Ideally this exception should be rethrown here but the internals of PECL's OAuth class throw an exception
-			// when a non-accepted return value (or no return value) is received. This seems to be winning from exceptions
-			// thrown at this point.
 			return OAUTH_TOKEN_REJECTED;
 		}
 
-		$AccessToken = OAuthAccessTokenModel::loadFromToken($Provider->token, $DataStore);
+		//Try to load the access token
+		try {
+			$AccessToken = OAuthAccessTokenModel::loadFromToken($Provider->token, $DataStore);
+		} catch (DataStoreReadException $Exception) {
+			return OAUTH_TOKEN_REJECTED;
+		}
 
-		#TODO consumer key provided ($this->Provider->consumer_key) must be the consumer key belonging to $RequestToken
-
-		if (!$AccessToken) {
+		//The consumer must be the same as the one this request token was originally issued for
+		if ($AccessToken->getAccessTokenConsumerKey() != $Provider->consumer_key) {
 			return OAUTH_TOKEN_REJECTED;
 		}
 

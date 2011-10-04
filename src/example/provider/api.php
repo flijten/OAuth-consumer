@@ -12,7 +12,11 @@ try {
 	var_dump($E);
 }
 
-$userId = $Provider->getUserId();
+try {
+	$userId = $Provider->getUserId();
+} catch (ProviderException $Exception) {
+	$Exception->getMessage();
+}
 
 $sql = "SELECT * FROM `user_messages` WHERE `user_id` = '" . $userId . "'";
 
