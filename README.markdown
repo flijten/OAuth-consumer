@@ -65,3 +65,4 @@ I yet have to implement. Slowly remove TODO's.
 6. Do something with the points at design defence :D
 7. Look at namespacing
 8. Have the OAuthProviderWrapper also work under OAuth 2.0. specs
+9. Return $this in Model setters to allow for chaining

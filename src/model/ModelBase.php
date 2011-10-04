@@ -34,8 +34,6 @@
  * @license BSD License
  */
 
-#TODO return $this in setters for chaining?
-
 abstract class ModelBase
 {
 	/**
