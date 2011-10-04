@@ -251,7 +251,6 @@ class OAuthProviderWrapper
 		$OAuthConsumer = OAuthConsumerModel::loadFromConsumerKey($Provider->consumer_key, $DataStore);
 
 		if (!$OAuthConsumer) {
-			#TODO add blacklisting and/or throttling?
 			return OAUTH_CONSUMER_KEY_UNKNOWN;
 		}
 
