@@ -27,10 +27,10 @@ CREATE TABLE `oauth_provider_request_token` (
 `request_token_consumer_key` varchar(40) NOT NULL,
 `request_token_callback` text NOT NULL,
 `request_token_scope` text NOT NULL,
-PRIMARY KEY (`request_token_id`)
+PRIMARY KEY (`request_token_id`),
+UNIQUE KEY (`request_token`)
 );
 
-#TODO unique keys on tokens?
 CREATE TABLE `oauth_provider_access_token` (
 `access_token_id` int(11) NOT NULL AUTO_INCREMENT,
 `access_token` varchar(30) NOT NULL,
@@ -39,7 +39,8 @@ CREATE TABLE `oauth_provider_access_token` (
 `access_token_date` int(11) NOT NULL,
 `access_token_consumer_key` varchar(40) NOT NULL,
 `access_token_scope` text NOT NULL,
-PRIMARY KEY (`access_token_id`)
+PRIMARY KEY (`access_token_id`),
+UNIQUE KEY (`access_token`)
 );
 
 ###########################################################################################
