@@ -126,7 +126,7 @@ class OAuthNonceModel extends ModelBase
 	 * @throws DataStoreDeleteException
 	 * @return void
 	 */
-	protected function delete()
+	public function delete()
 	{
 		$sql = "DELETE FROM `oauth_provider_nonce`
 				WHERE `nonce` = '" . $this->DataStore->real_escape_string($this->nonce) . "'";

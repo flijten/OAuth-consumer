@@ -175,7 +175,7 @@ class OAuthAccessTokenModel extends ModelBase
 	 * @throws DataStoreDeleteException
 	 * @return void
 	 */
-	protected function delete()
+	public function delete()
 	{
 		$sql = "DELETE FROM `oauth_provider_access_token`
 				WHERE `access_token_id` = '" . $this->DataStore->real_escape_string($this->accessTokenId) . "'";

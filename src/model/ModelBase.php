@@ -81,5 +81,5 @@ abstract class ModelBase
 
 	abstract protected function update();
 
-	abstract protected function delete();
+	abstract public function delete();
 }

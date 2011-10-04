@@ -149,7 +149,7 @@ class OAuthConsumerModel extends ModelBase
 	 * @throws DataStoreDeleteException
 	 * @return void
 	 */
-	protected function delete()
+	public function delete()
 	{
 		$sql = "DELETE FROM `oauth_provider_consumer`
 				WHERE `consumer_id` = '" . $this->DataStore->real_escape_string($this->consumerId) . "'";
@@ -225,9 +225,3 @@ class OAuthConsumerModel extends ModelBase
 		return $this->consumerSecret;
 	}
 }
-
-
-//`consumer_id` int(11) NOT NULL AUTO_INCREMENT,
-//`consumer_key` varchar(40) NOT NULL,
-//`consumer_secret` varchar(40) NOT NULL,
-//`consumer_create_date` int(11) NOT NULL,

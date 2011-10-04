@@ -200,7 +200,7 @@ class OAuthRequestTokenModel extends ModelBase
 	 * @throws DataStoreReadException
 	 * @return void
 	 */
-	protected function delete()
+	public function delete()
 	{
 		$sql = "DELETE FROM `oauth_provider_request_token`
 				WHERE `request_token_id` = '" . $this->DataStore->real_escape_string($this->tokenId) . "'";
