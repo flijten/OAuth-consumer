@@ -89,7 +89,7 @@ class OAuthProviderWrapper
 	{
 		$token = bin2hex($this->Provider->generateToken(15, true));
 		$tokenSecret = bin2hex($this->Provider->generateToken(5, true));
-
+#TODO larger tokens and secrets! perhaps sha1 them
 		$RequestToken = new OAuthRequestTokenModel(Configuration::getDataStore());
 		$RequestToken->setToken($token);
 		$RequestToken->setTokenSecret($tokenSecret);
@@ -105,7 +105,6 @@ class OAuthProviderWrapper
 		}
 
 		echo "oauth_token=$token&oauth_token_secret=$tokenSecret&oauth_callback_confirmed=true";
-		exit;
 	}
 
 	/**
@@ -139,7 +138,7 @@ class OAuthProviderWrapper
 
 		$token = bin2hex($this->Provider->generateToken(15, true));
 		$tokenSecret = bin2hex($this->Provider->generateToken(5, true));
-
+#TODO larger tokens and secrets! perhaps sha1 them
 		$AccessToken = new OAuthAccessTokenModel(Configuration::getDataStore());
 		$AccessToken->setAccessToken($token);
 		$AccessToken->setAccessTokenSecret($tokenSecret);
@@ -163,7 +162,6 @@ class OAuthProviderWrapper
 
 		//all is well, output token
 		echo "oauth_token=$token&oauth_token_secret=$tokenSecret";
-		exit;
 	}
 
 	/**
