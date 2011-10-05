@@ -51,36 +51,34 @@ class OAuthProviderWrapper
 		if ($mode == self::TOKEN_REQUEST) {
 
 			$this->Provider->isRequestTokenEndpoint(true);
-
-			try {
-				$this->Provider->checkOAuthRequest();
-			} catch (Exception $Exception) {
-				echo $Exception->getMessage();
-				exit;
-			}
+			//enforce the presence of these parameters
+			$this->Provider->addRequiredParameter("oauth_callback");
+			$this->Provider->addRequiredParameter("scope");
 
 		} else if ($mode == self::TOKEN_ACCESS) {
 
 			$this->Provider->tokenHandler(array($this,'checkRequestToken'));
 
-			try {
-				$this->Provider->checkOAuthRequest();
-			} catch (Exception $Exception) {
-				echo $Exception->getMessage();
-				exit;
-			}
-
 		} else if ($mode == self::TOKEN_VERIFY) {
 
 			$this->Provider->tokenHandler(array($this,'checkAccessToken'));
 
-			try {
-				$this->Provider->checkOAuthRequest();
-			} catch (Exception $Exception) {
-				echo $Exception->getMessage();
-				exit;
-			}
 		}
+	}
+
+	/**
+	 * Uses OAuthProvider->checkOAuthRequest() which initiates the callbacks and checks the signature
+	 *
+	 * @return bool|string
+	 */
+	public function checkOAuthRequest()
+	{
+		try {
+			$this->Provider->checkOAuthRequest();
+		} catch (Exception $Exception) {
+			return $this->Provider::reportProblem($Exception);
+		}
+		return true;
 	}
 
 	/**
@@ -236,9 +234,6 @@ class OAuthProviderWrapper
 	 */
 	public static function consumerHandler($Provider)
 	{
-		$Provider->addRequiredParameter("oauth_callback");
-		$Provider->addRequiredParameter("scope");
-
 		try {
 			$DataStore = Configuration::getDataStore();
 		} catch (DataStoreConnectException $Exception) {
@@ -248,9 +243,9 @@ class OAuthProviderWrapper
 			return OAUTH_CONSUMER_KEY_UNKNOWN;
 		}
 
-		$OAuthConsumer = OAuthConsumerModel::loadFromConsumerKey($Provider->consumer_key, $DataStore);
-
-		if (!$OAuthConsumer) {
+		try {
+			$OAuthConsumer = OAuthConsumerModel::loadFromConsumerKey($Provider->consumer_key, $DataStore);
+		} catch (DataStoreReadException $Exception) {
 			return OAUTH_CONSUMER_KEY_UNKNOWN;
 		}
 
