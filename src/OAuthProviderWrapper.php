@@ -82,13 +82,25 @@ class OAuthProviderWrapper
 	}
 
 	/**
+	 * Wrapper around OAuthProvider::generateToken to add sha1 hashing at one place
+	 * @static
+	 * @param 	bool $sha1
+	 * @return 	string
+	 */
+	public static function generateToken()
+	{
+		$token = OAuthProvider::generateToken(40, true);
+		return sha1( $token );
+	}
+
+	/**
 	 * Generates and outputs a request token
 	 * @throws ProviderException
 	 */
 	public function outputRequestToken()
 	{
-		$token = bin2hex($this->Provider->generateToken(15, true));
-		$tokenSecret = bin2hex($this->Provider->generateToken(5, true));
+		$token = bin2hex($this->Provider::generateToken(15, true));
+		$tokenSecret = bin2hex($this->Provider::generateToken(5, true));
 #TODO larger tokens and secrets! perhaps sha1 them
 		$RequestToken = new OAuthRequestTokenModel(Configuration::getDataStore());
 		$RequestToken->setToken($token);
@@ -119,7 +131,7 @@ class OAuthProviderWrapper
 		} catch (DataStoreReadException $Exception) {
 			throw new ProviderException("Invalid request token");
 		}
-
+#TODO, these checks aren't necessary here right. they are already performed in the token handler
 		//The consumer must be the same as the one this request token was originally issued for
 		if ($RequestToken->getTokenConsumerKey() != $this->Provider->consumer_key) {
 			throw new ProviderException("Invalid consumer key");
