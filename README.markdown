@@ -71,3 +71,4 @@ I yet have to implement. Slowly remove TODO's.
 8. Have the OAuthProviderWrapper also work under OAuth 2.0. specs
 9. Return $this in Model setters to allow for chaining
 10. Add blacklisting and/or throttling for consumers
+11. OOB callback support
