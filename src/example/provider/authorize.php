@@ -26,7 +26,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($_POST['allow'])) {
 	$DB 	= Configuration::getDataStore();
 	$sql 	= "SELECT `user_id`, `user_name`, `user_password` FROM `user` WHERE `user_name` = '" . $DB->real_escape_string($_POST['user_name']) . "'";
 	$result = $DB->query($sql);
-	var_dump($sql);
 	$row 	= $result->fetch_assoc();
 	$result->close();
 
@@ -35,8 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($_POST['allow'])) {
 		exit;
 	}
 
-	$verificationCode = substr( sha1( microtime() . rand(1000, 10000000) ), 5, 15 );
-
+	$verificationCode = OAuthProviderWrapper::generateToken();
 	$RequestToken->setTokenVerificationCode($verificationCode);
 	$RequestToken->setTokenUserId($row['user_id']);
 
