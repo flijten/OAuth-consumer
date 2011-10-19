@@ -126,28 +126,6 @@ class OAuthProviderWrapper
 	 */
 	public function outputAccessToken()
 	{
-		try {
-			$RequestToken = OAuthRequestTokenModel::loadFromToken($this->Provider->token, Configuration::getDataStore());
-		} catch (DataStoreReadException $Exception) {
-			throw new ProviderException("Invalid request token");
-		}
-#TODO, these checks aren't necessary here right. they are already performed in the token handler
-		//The consumer must be the same as the one this request token was originally issued for
-		if ($RequestToken->getTokenConsumerKey() != $this->Provider->consumer_key) {
-			throw new ProviderException("Invalid consumer key");
-		}
-
-		//The request token must be authorised
-		$verificationCode = $RequestToken->getTokenVerificationCode();
-		if (empty($verificationCode)) {
-			throw new ProviderException("The supplied request token isn't authorised yet");
-		}
-
-		//The verification code must be correct
-		if ($this->Provider->verifier != $verificationCode) {
-			throw new ProviderException("Invalid verification");
-		}
-
 		$token 			= OAuthProviderWrapper::generateToken();
 		$tokenSecret 	= OAuthProviderWrapper::generateToken();
 		$AccessToken 	= new OAuthAccessTokenModel(Configuration::getDataStore());
