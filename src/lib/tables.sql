@@ -19,8 +19,8 @@ PRIMARY KEY (`nonce`)
 # Could be emptied every hour for each row where request_token_date < now() - 60 minutes
 CREATE TABLE `oauth_provider_request_token` (
 `request_token_id` int(11) NOT NULL AUTO_INCREMENT,
-`request_token` varchar(30) NOT NULL,
-`request_token_secret` varchar(10) NOT NULL,
+`request_token` varchar(40) NOT NULL,
+`request_token_secret` varchar(40) NOT NULL,
 `request_token_verification_code` varchar(40),
 `request_token_user_id` int(11),
 `request_token_date` int(11) NOT NULL,
@@ -33,8 +33,8 @@ UNIQUE KEY (`request_token`)
 
 CREATE TABLE `oauth_provider_access_token` (
 `access_token_id` int(11) NOT NULL AUTO_INCREMENT,
-`access_token` varchar(30) NOT NULL,
-`access_token_secret` varchar(10) NOT NULL,
+`access_token` varchar(40) NOT NULL,
+`access_token_secret` varchar(40) NOT NULL,
 `access_token_user_id` int(11),
 `access_token_date` int(11) NOT NULL,
 `access_token_consumer_key` varchar(40) NOT NULL,
