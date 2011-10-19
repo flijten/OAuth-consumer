@@ -76,7 +76,7 @@ class OAuthProviderWrapper
 		try {
 			$this->Provider->checkOAuthRequest();
 		} catch (Exception $Exception) {
-			return $this->Provider::reportProblem($Exception);
+			return OAuthProvider::reportProblem($Exception);
 		}
 		return true;
 	}
@@ -99,10 +99,10 @@ class OAuthProviderWrapper
 	 */
 	public function outputRequestToken()
 	{
-		$token = bin2hex($this->Provider::generateToken(15, true));
-		$tokenSecret = bin2hex($this->Provider::generateToken(5, true));
-#TODO larger tokens and secrets! perhaps sha1 them
-		$RequestToken = new OAuthRequestTokenModel(Configuration::getDataStore());
+		$token 			= OAuthProviderWrapper::generateToken();
+		$tokenSecret 	= OAuthProviderWrapper::generateToken();
+		$RequestToken 	= new OAuthRequestTokenModel(Configuration::getDataStore());
+
 		$RequestToken->setToken($token);
 		$RequestToken->setTokenSecret($tokenSecret);
 		$RequestToken->setTokenDate(time());
@@ -148,10 +148,10 @@ class OAuthProviderWrapper
 			throw new ProviderException("Invalid verification");
 		}
 
-		$token = bin2hex($this->Provider->generateToken(15, true));
-		$tokenSecret = bin2hex($this->Provider->generateToken(5, true));
-#TODO larger tokens and secrets! perhaps sha1 them
-		$AccessToken = new OAuthAccessTokenModel(Configuration::getDataStore());
+		$token 			= OAuthProviderWrapper::generateToken();
+		$tokenSecret 	= OAuthProviderWrapper::generateToken();
+		$AccessToken 	= new OAuthAccessTokenModel(Configuration::getDataStore());
+
 		$AccessToken->setAccessToken($token);
 		$AccessToken->setAccessTokenSecret($tokenSecret);
 		$AccessToken->setAccessTokenDate(time());
