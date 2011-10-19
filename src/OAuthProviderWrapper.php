@@ -131,6 +131,22 @@ class OAuthProviderWrapper
 		} catch (DataStoreReadException $Exception) {
 			throw new ProviderException("Invalid request token");
 		}
+#TODO, these checks aren't necessary here right. they are already performed in the token handler
+		//The consumer must be the same as the one this request token was originally issued for
+		if ($RequestToken->getTokenConsumerKey() != $this->Provider->consumer_key) {
+			throw new ProviderException("Invalid consumer key");
+		}
+
+		//The request token must be authorised
+		$verificationCode = $RequestToken->getTokenVerificationCode();
+		if (empty($verificationCode)) {
+			throw new ProviderException("The supplied request token isn't authorised yet");
+		}
+
+		//The verification code must be correct
+		if ($this->Provider->verifier != $verificationCode) {
+			throw new ProviderException("Invalid verification");
+		}
 
 		$token = bin2hex($this->Provider->generateToken(15, true));
 		$tokenSecret = bin2hex($this->Provider->generateToken(5, true));
