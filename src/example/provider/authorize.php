@@ -12,10 +12,10 @@ if (!isset($_GET['oauth_token'])) {
 require_once(__DIR__ . '/../../lib/AutoLoader.php');
 new AutoLoader();
 
-$RequestToken = OAuthRequestTokenModel::loadFromToken($_GET['oauth_token'], Configuration::getDataStore());
-
-if (!$RequestToken) {
-	echo "Invalid token";
+try {
+	$RequestToken = OAuthRequestTokenModel::loadFromToken($_GET['oauth_token'], Configuration::getDataStore());
+} catch (DataStoreReadException $Exception) {
+	echo $Exception->getMessage();
 	exit;
 }
 
