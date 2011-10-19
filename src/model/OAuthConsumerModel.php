@@ -95,7 +95,7 @@ class OAuthConsumerModel extends ModelBase
 	protected function create()
 	{
 		$sql = "INSERT INTO `oauth_provider_consumer`
-				SET `consumer_key` = '" . $this->DataStore->real_escape_string($this->consumerKey) . "
+				SET `consumer_key` = '" . $this->DataStore->real_escape_string($this->consumerKey) . "',
 					`consumer_secret` = '" . $this->DataStore->real_escape_string($this->consumerSecret) . "',
 					`consumer_create_date` = '" . $this->DataStore->real_escape_string($this->consumerCreateDate) . "'";
 
