@@ -282,6 +282,7 @@ class OAuthProviderWrapper
 			return OAUTH_TOKEN_REJECTED;
 		}
 
+		//Token can not be loaded, reject it.
 		try {
 			$RequestToken = OAuthRequestTokenModel::loadFromToken($Provider->token, $DataStore);
 		} catch (DataStoreReadException $Exception) {
@@ -297,6 +298,7 @@ class OAuthProviderWrapper
 			return OAUTH_TOKEN_REJECTED;
 		}
 
+		//Check if the verification code is correct.
 		if ($_GET['oauth_verifier'] != $RequestToken->getTokenVerificationCode()) {
 			return OAUTH_VERIFIER_INVALID;
 		}
