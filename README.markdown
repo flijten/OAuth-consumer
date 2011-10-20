@@ -57,18 +57,12 @@ name the getter for its unique identifier getId().
 Future plans
 ============
 
-1. According to http://tools.ietf.org/html/rfc5849#page-32 my secrets should probably be longer, In fact I should consider everything in chapter 4.
-2. Correct responses according to: http://tools.ietf.org/html/rfc5849#section-3.2
-3. Find a better way of making this code customizable for various datasources. The overwriting of all these methods isn't
-really pretty.
-4. Find a good error reporting system. I started this out using exceptions mainly because I don't use them at work.
-I need to find a good way of getting the final message to the user in a nice fashion. I don't really know if I want to maintain
-the exceptions inside the models for instance.
-5. Clean up code. There is code left from idea's which I don't find necessary anymore as well as code from ideas
-I yet have to implement. Slowly remove TODO's.
-6. Do something with the points at design defence :D
-7. Look at namespacing
-8. Have the OAuthProviderWrapper also work under OAuth 2.0. specs
-9. Return $this in Model setters to allow for chaining
-10. Add blacklisting and/or throttling for consumers
-11. OOB callback support
+1. Correct responses according to: http://tools.ietf.org/html/rfc5849#section-3.2
+2. Find a better way of making this code customizable for various datasources. The overwriting of all these methods isn't really pretty.
+3. Add blacklisting and/or throttling for consumers
+4. OOB callback support
+5. Have the OAuthProviderWrapper also work under OAuth 2.0. specs
+6. Find a good error reporting system. I started this out using exceptions mainly because I don't use them at work. I need to find a good way of getting the final message to the user in a nice fashion. I don't really know if I want to maintain the exceptions inside the models for instance.
+7. General code cleanup
+8. Do something with the points at design defence :D
+9. Namespacing
