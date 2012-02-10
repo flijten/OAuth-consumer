@@ -126,9 +126,11 @@ class OAuthProviderWrapper
 	 */
 	public function outputAccessToken()
 	{
+		$DataStore	= Configuration::getDataStore();
 		$token 			= OAuthProviderWrapper::generateToken();
 		$tokenSecret 	= OAuthProviderWrapper::generateToken();
-		$AccessToken 	= new OAuthAccessTokenModel(Configuration::getDataStore());
+		$AccessToken 	= new OAuthAccessTokenModel($DataStore);
+		$RequestToken	= OAuthRequestTokenModel::loadFromToken($this->Provider->token, $DataStore);
 
 		$AccessToken->setAccessToken($token);
 		$AccessToken->setAccessTokenSecret($tokenSecret);
