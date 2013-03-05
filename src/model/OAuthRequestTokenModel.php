@@ -127,11 +127,12 @@ class OAuthRequestTokenModel extends ModelBase
 	 */
 	protected function create()
 	{
+        $user_id = $this->tokenUserId ? "'" . $this->DataStore->real_escape_string($this->tokenUserId) . "'" : 'NULL';
 		$sql = "INSERT INTO `oauth_provider_request_token`
 				SET `request_token` = '" . $this->DataStore->real_escape_string($this->token) . "',
 					`request_token_secret` = '" . $this->DataStore->real_escape_string($this->tokenSecret) . "',
 					`request_token_verification_code` = '" . $this->DataStore->real_escape_string($this->tokenVerificationCode) . "',
-					`request_token_user_id` = '" . $this->DataStore->real_escape_string($this->tokenUserId) . "',
+					`request_token_user_id` = $user_id,
 					`request_token_date` = '" . $this->DataStore->real_escape_string($this->tokenDate) . "',
 					`request_token_consumer_key` = '" . $this->DataStore->real_escape_string($this->tokenConsumerKey) . "',
 					`request_token_callback` = '" . $this->DataStore->real_escape_string($this->tokenCallback) . "',
