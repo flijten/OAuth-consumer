@@ -206,7 +206,7 @@ class OAuthProviderWrapper
 		$OAuthNonce->setNonceDate(time());
 
 		try {
-			$OAuthNonce->save();
+			$OAuthNonce->create();
 		} catch (DataStoreCreateException $Exception) {
 			return OAUTH_BAD_NONCE;
 		}
