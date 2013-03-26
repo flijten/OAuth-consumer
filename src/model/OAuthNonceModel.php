@@ -72,7 +72,7 @@ class OAuthNonceModel extends ModelBase
 	 * @throws DataStoreCreateException
 	 * @return void
 	 */
-	protected function create()
+	public function create()
 	{
 		$sql = "INSERT INTO `oauth_provider_nonce`
 				SET `nonce` = '" . $this->DataStore->real_escape_string($this->nonce) . "',
