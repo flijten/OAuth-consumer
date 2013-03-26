@@ -47,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($_POST['allow'])) {
 
 	header( 'location: ' . $RequestToken->getTokenCallback() . '?oauth_token=' . $RequestToken->getToken() . '&oauth_verifier=' . $verificationCode );
 
-} else if ($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($_POST['allow'])) {
+} else if ($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($_POST['deny'])) {
 
 	//The user specifically denied access. Lets delete the request token
 	try {
