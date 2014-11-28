@@ -1,3 +1,28 @@
+Couchbase Version
+=================
+
+This project is refactored to use Couchbase instead of MySQL.
+
+
+Configuration
+===============
+
+1. Make sure you have a Couchbase server running;
+2. Use the files from /src/couchbase views to create the views in your Couchbase bucket;
+3. Create a scheduler that deletes the nonce documents 5 minutes after they are created (Couchbase has a special function for this, but I did not figured out how to do it yet);
+4. Change host, username, password and bucket to your Couchbase details in /src/lib/Configuration.php;
+5. Change the endpoints in /src/example/consumer/config.php.
+
+
+Getting Started
+===============
+1. Generate a Consumer Key and Consumer Secret just once for your "application" (/src/example/provider/create_consumer.php). Replace the consumerKey and consumerSecret in /src/example/consumer/config.php with the variables that were returned;
+2. Call /src/example/consumer/get_request_token.php. If all goes ok, you should be redirected to authorize.php.
+3. Log in with username = "Jason" and password = "pas" (these are statically defined in the code for this example);
+4. An outh_token and oauth_token_secret should be returned. Replace the token and tokenSecret variables in /src/example/consumer/config.php with these.
+5. Make the example API call (/src/example/consumer/api_call.php). This will call the API endpoint on the provider side which should return the user_id corresponding to the Access Token been used.
+
+
 OAuth Provider
 ==============
 
