@@ -74,7 +74,7 @@ class OAuthNonceModel extends ModelBase implements JsonSerializable
 	 */
 	public static function nonceExists($nonce, $DataStore)
 	{
-		$result = $DataStore->view("dev_oauth", "getOAuthProviderNonceByNonce", array("stale" => false, limit => 1, "key" => $nonce, "inclusive_end" => true));
+		$result = $DataStore->view("dev_oauth", "getOAuthProviderNonceByNonce", array("stale" => false, "limit" => 1, "key" => $nonce, "inclusive_end" => true));
 
 		return count($result["rows"]) > 0;
 	}
@@ -87,7 +87,7 @@ class OAuthNonceModel extends ModelBase implements JsonSerializable
 	{
 		$result = $this->DataStore->add($this->nonce, json_encode($this));
 
-		if (!result) {
+		if (!$result) {
 			throw new DataStoreCreateException("Couldn't save the nonce to the datastore");
 		}
 	}

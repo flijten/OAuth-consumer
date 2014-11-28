@@ -112,9 +112,9 @@ class OAuthRequestTokenModel extends ModelBase implements JsonSerializable
 	 */
 	public static function loadFromToken($token, $DataStore)
 	{
-		$result = $DataStore->view("dev_oauth", "getOAuthProviderRequestTokenByRequestToken", array("stale" => false, limit => 1, "key" => $token , "inclusive_end" => true));
+		$result = $DataStore->view("dev_oauth", "getOAuthProviderRequestTokenByRequestToken", array("stale" => false, "limit" => 1, "key" => $token , "inclusive_end" => true));
 
-		if (!$result || count($result["rows"]) < 1)) {
+		if (!$result || count($result["rows"]) < 1) {
 			throw new DataStoreReadException("Couldn't read the request token data from the datastore");
 		}
 
@@ -147,7 +147,7 @@ class OAuthRequestTokenModel extends ModelBase implements JsonSerializable
 
 		$result = $this->DataStore->add($this->tokenId, json_encode($this));
 
-		if (!result) {
+		if (!$result) {
 			throw new DataStoreReadException("Couldn't create the request token data in the datastore");
 		}
 	}

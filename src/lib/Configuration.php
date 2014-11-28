@@ -59,7 +59,7 @@ class Configuration
 
 			$DataStore = new Couchbase($host, $username, $password, $bucket);
 
-			if ($Datastore->connect_error) {
+			if (!$DataStore) {
 				throw new DataStoreConnectException($DataStore->connect_error);
 				exit;
 			}

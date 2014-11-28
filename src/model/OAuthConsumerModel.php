@@ -81,9 +81,9 @@ class OAuthConsumerModel extends ModelBase implements JsonSerializable
 	{
 		$OAuthConsumer = new OAuthConsumerModel($DataStore);
 
-		$result = $DataStore->view("dev_oauth", "getOAuthProviderConsumerByConsumerKey", array("stale" => false, limit => 1, "key" => $consumerKey, "inclusive_end" => true));
+		$result = $DataStore->view("dev_oauth", "getOAuthProviderConsumerByConsumerKey", array("stale" => false, "limit" => 1, "key" => $consumerKey, "inclusive_end" => true));
 
-		if (!$result || count($result["rows"]) < 1)) {
+		if (!$result || count($result["rows"]) < 1) {
 			throw new DataStoreReadException("Couldn't read the consumer data from the datastore");
 		}
 
@@ -105,7 +105,7 @@ class OAuthConsumerModel extends ModelBase implements JsonSerializable
 
 		$result = $this->DataStore->add($this->consumerId, json_encode($this));
 
-		if (!result) {
+		if (!$result) {
 			throw new DataStoreCreateException("Couldn't save the consumer to the datastore");
 		}
 	}
