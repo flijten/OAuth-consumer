@@ -1,0 +1,5 @@
+function (doc, meta) {
+  if (doc.type == "oauth_provider_consumer") {
+    emit(doc.consumer_id, doc);
+  }
+}

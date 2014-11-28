@@ -1,0 +1,5 @@
+function (doc, meta) {
+  if (doc.type == "oauth_provider_access_token") {
+    emit(doc.access_token, doc);
+  }
+}

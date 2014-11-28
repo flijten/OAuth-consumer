@@ -2,7 +2,6 @@
 /**
  * @Author	Freek Lijten
  */
-
 //non
 if (!isset($_GET['oauth_token'])) {
 	echo "No token supplied.";
@@ -19,24 +18,21 @@ try {
 	exit;
 }
 
+$username = "Jason";
+$userPassword = "pas";
+$userId = 12345;
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($_POST['allow'])) {
 
-	// User has no model, it just here by example, hence the open MySQL query
-	// This is not a good way to actually store user data (plaintext password wtf)
-	$DB 	= Configuration::getDataStore();
-	$sql 	= "SELECT `user_id`, `user_name`, `user_password` FROM `user` WHERE `user_name` = '" . $DB->real_escape_string($_POST['user_name']) . "'";
-	$result = $DB->query($sql);
-	$row 	= $result->fetch_assoc();
-	$result->close();
+	if ($_POST['user_name'] !== $username || $_POST["user_password"] !== $userPassword) {
 
-	if ($row['user_password'] != $_POST['user_password']) {
-		echo "You hacker, be gone!";
+		echo "Invalid credentials";
 		exit;
-	}
+	} 
 
 	$verificationCode = OAuthProviderWrapper::generateToken();
 	$RequestToken->setTokenVerificationCode($verificationCode);
-	$RequestToken->setTokenUserId($row['user_id']);
+	$RequestToken->setTokenUserId("aaaab");
 
 	try {
 		$RequestToken->save();

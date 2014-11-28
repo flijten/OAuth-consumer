@@ -34,8 +34,14 @@
  * @license BSD License
  */
 
-class OAuthAccessTokenModel extends ModelBase
+include_once("ModelBase.php");
+
+class OAuthAccessTokenModel extends ModelBase implements JsonSerializable
 {
+	/**
+	 * @var string
+	 */
+	private $type					= "oauth_provider_access_token";
 	/**
 	 * @var int
 	 */
@@ -69,6 +75,20 @@ class OAuthAccessTokenModel extends ModelBase
 	 */
 	private $accessTokenScope		= null;
 
+    public function jsonSerialize() {
+        return [
+            "type" => $this->type,
+            "access_token_id" => $this->accessTokenId,
+            "access_token" => $this->accessToken,
+            "access_token_secret" => $this->accessTokenSecret,
+            "access_token_state" => $this->accessTokenState,
+            "access_token_user_id" => $this->accessTokenUserId,
+            "access_token_date" => $this->accessTokenDate,
+            "access_token_consumer_key" => $this->accessTokenConsumerKey,
+            "access_token_scope" => $this->accessTokenScope
+        ];
+    }
+
 	/**
 	 * Serves as factory method. Loads the data for a request token based on the token
 	 * string.
@@ -81,27 +101,20 @@ class OAuthAccessTokenModel extends ModelBase
 	 */
 	public static function loadFromToken($token, $DataStore)
 	{
-		$sql = "SELECT *
-				FROM `oauth_provider_access_token`
-				WHERE `access_token` = '" . $DataStore->real_escape_string($token) . "'";
+		$result = $DataStore->view("dev_oauth", "getOAuthProviderAccessTokenByAccessToken", array("stale" => false, limit => 1, "key" => $token, "inclusive_end" => true));
 
-		$result = $DataStore->query($sql);
-
-		if (!$result || $result->num_rows < 1) {
-			throw new DataStoreReadException("Couldn't read the access token data from the datastore");
-		}
-
-		$data 	= $result->fetch_assoc();
-		$result->close();
+        if (!result || count($result["rows"]) < 1)) {
+        	throw new DataStoreReadException("Couldn't read the access token data from the datastore");
+        }
 
 		$AccessToken = new OAuthAccessTokenModel($DataStore);
-		$AccessToken->accessTokenId = $data['access_token_id'];
-		$AccessToken->accessToken = $data['access_token'];
-		$AccessToken->accessTokenSecret = $data['access_token_secret'];
-		$AccessToken->accessTokenUserId = $data['access_token_user_id'];
-		$AccessToken->accessTokenDate = $data['access_token_date'];
-		$AccessToken->accessTokenConsumerKey = $data['access_token_consumer_key'];
-		$AccessToken->accessTokenScope = $data['access_token_scope'];
+		$AccessToken->accessTokenId = $result["rows"][0]["value"]["access_token_id"];
+		$AccessToken->accessToken = $result["rows"][0]["value"]["access_token"];
+		$AccessToken->accessTokenSecret = $result["rows"][0]["value"]["access_token_secret"];
+		$AccessToken->accessTokenUserId = $result["rows"][0]["value"]["access_token_user_id"];
+		$AccessToken->accessTokenDate = $result["rows"][0]["value"]["access_token_date"];
+		$AccessToken->accessTokenConsumerKey = $result["rows"][0]["value"]["access_token_consumer_key"];
+		$AccessToken->accessTokenScope = $result["rows"][0]["value"]["access_token_scope"];
 
 		return $AccessToken;
 	}
@@ -114,17 +127,11 @@ class OAuthAccessTokenModel extends ModelBase
 	 */
 	protected function create()
 	{
-		$sql = "INSERT INTO `oauth_provider_access_token`
-				SET `access_token` = '" . $this->DataStore->real_escape_string($this->accessToken) . "',
-					`access_token_secret` = '" . $this->DataStore->real_escape_string($this->accessTokenSecret) . "',
-					`access_token_user_id` = '" . $this->DataStore->real_escape_string($this->accessTokenUserId) . "',
-					`access_token_date` = '" . $this->DataStore->real_escape_string($this->accessTokenDate) . "',
-					`access_token_consumer_key` = '" . $this->DataStore->real_escape_string($this->accessTokenConsumerKey) . "',
-					`access_token_scope` = '" . $this->DataStore->real_escape_string($this->accessTokenScope) . "'";
+		$this->accessTokenId = uniqid();
 
-		if ($this->DataStore->query($sql)) {
-			$this->tokenId = $this->DataStore->insert_id;
-		} else {
+		$result = $this->DataStore->add($this->accessTokenId, json_encode($this));
+
+		if (!result) {
 			throw new DataStoreCreateException("Couldn't save the access token to the datastore");
 		}
 	}
@@ -135,18 +142,11 @@ class OAuthAccessTokenModel extends ModelBase
 	 */
 	protected function read()
 	{
-		$sql = "SELECT *
-				FROM `oauth_provider_access_token
-				WHERE `access_token_id` = '" . $this->DataStore->real_escape_string($this->accessTokenId) . "'";
+		$result = $this->DataStore->view("dev_oauth", "getOAuthProviderAccessTokenByAccessTokenId", array("stale" => false, limit => 1, "key" => $this->accessTokenId, "inclusive_end" => true));
 
-		$result = $this->DataStore->query($sql);
-
-		if (!$result) {
-			throw new DataStoreReadException("Couldn't read the access token data from the datastore");
-		}
-
-		$data 	= $result->fetch_assoc();
-		$result->close();
+        if (!result) {
+        	throw new DataStoreReadException("Couldn't read the access token data from the datastore");
+        }
 
 		return $data;
 	}
@@ -157,16 +157,9 @@ class OAuthAccessTokenModel extends ModelBase
 	 */
 	protected function update()
 	{
-		$sql = "UPDATE `oauth_provider_access_token`
-				SET `access_token` = '" . $this->DataStore->real_escape_string($this->accessToken) . "',
-					`access_token_secret` = '" . $this->DataStore->real_escape_string($this->accessTokenSecret) . "',
-					`access_token_user_id` = '" . $this->DataStore->real_escape_string($this->accessTokenUserId) . "',
-					`access_token_date` = '" . $this->DataStore->real_escape_string($this->accessTokenDate) . "',
-					`access_token_consumer_key` = '" . $this->DataStore->real_escape_string($this->accessTokenConsumerKey) . "',
-					`access_token_scope` = '" . $this->DataStore->real_escape_string($this->accessTokenScope) . "'
-				WHERE `access_token_id` = '" . $this->DataStore->real_escape_string($this->accessTokenId) . "'";
+		$result = $this->DataStore->replace($this->accessTokenId, json_encode($this));
 
-		if (!$this->DataStore->query($sql)) {
+		if (!$result) {
 			throw new DataStoreUpdateException("Couldn't update the access token to the datastore");
 		}
 	}
@@ -177,10 +170,9 @@ class OAuthAccessTokenModel extends ModelBase
 	 */
 	public function delete()
 	{
-		$sql = "DELETE FROM `oauth_provider_access_token`
-				WHERE `access_token_id` = '" . $this->DataStore->real_escape_string($this->accessTokenId) . "'";
+		$result = $this->DataStore->delete($this->accessTokenId);
 
-		if (!$this->DataStore->query($sql)) {
+		if (!$result) {
 			throw new DataStoreDeleteException("Couldn't delete the access token from the datastore");
 		}
 	}

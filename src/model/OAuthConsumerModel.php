@@ -34,8 +34,14 @@
  * @license BSD License
  */
 
-class OAuthConsumerModel extends ModelBase
+include_once("ModelBase.php");
+
+class OAuthConsumerModel extends ModelBase implements JsonSerializable
 {
+	/**
+	 * @var string
+	 */
+	private $type					= "oauth_provider_consumer";
 	/**
 	 * @var int
 	 */
@@ -53,7 +59,15 @@ class OAuthConsumerModel extends ModelBase
 	 */
 	private $consumerCreateDate;
 
-
+    public function jsonSerialize() {
+        return [
+            "type" => $this->type,
+            "consumer_id" => $this->consumerId,
+            "consumer_key" => $this->consumerKey,
+            "consumer_secret" => $this->consumerSecret,
+            "consumer_create_date" => $this->consumerCreateDate
+        ];
+    }
 // CRUD functions
 
 	/**
@@ -67,23 +81,16 @@ class OAuthConsumerModel extends ModelBase
 	{
 		$OAuthConsumer = new OAuthConsumerModel($DataStore);
 
-		$sql = "SELECT *
-				FROM `oauth_provider_consumer`
-				WHERE `consumer_key` = '" . $DataStore->real_escape_string($consumerKey) . "'";
+		$result = $DataStore->view("dev_oauth", "getOAuthProviderConsumerByConsumerKey", array("stale" => false, limit => 1, "key" => $consumerKey, "inclusive_end" => true));
 
-		$result = $DataStore->query($sql);
-
-		if (!$result || $result->num_rows < 1) {
+		if (!$result || count($result["rows"]) < 1)) {
 			throw new DataStoreReadException("Couldn't read the consumer data from the datastore");
 		}
 
-		$data 	= $result->fetch_assoc();
-		$result->close();
-
-		$OAuthConsumer->setId($data['consumer_id']);
-		$OAuthConsumer->setConsumerKey($data['consumer_key']);
-		$OAuthConsumer->setConsumerSecret($data['consumer_secret']);
-		$OAuthConsumer->setConsumerCreateDate($data['consumer_create_date']);
+		$OAuthConsumer->setId($result["rows"][0]["value"]['consumer_id']);
+		$OAuthConsumer->setConsumerKey($result["rows"][0]["value"]['consumer_key']);
+		$OAuthConsumer->setConsumerSecret($result["rows"][0]["value"]['consumer_secret']);
+		$OAuthConsumer->setConsumerCreateDate($result["rows"][0]["value"]['consumer_create_date']);
 
 		return $OAuthConsumer;
 	}
@@ -94,14 +101,11 @@ class OAuthConsumerModel extends ModelBase
 	 */
 	protected function create()
 	{
-		$sql = "INSERT INTO `oauth_provider_consumer`
-				SET `consumer_key` = '" . $this->DataStore->real_escape_string($this->consumerKey) . "',
-					`consumer_secret` = '" . $this->DataStore->real_escape_string($this->consumerSecret) . "',
-					`consumer_create_date` = '" . $this->DataStore->real_escape_string($this->consumerCreateDate) . "'";
+		$this->consumerId = uniqid();
 
-		if ($this->DataStore->query($sql)) {
-			$this->tokenId = $this->DataStore->insert_id;
-		} else {
+		$result = $this->DataStore->add($this->consumerId, json_encode($this));
+
+		if (!result) {
 			throw new DataStoreCreateException("Couldn't save the consumer to the datastore");
 		}
 	}
@@ -112,20 +116,13 @@ class OAuthConsumerModel extends ModelBase
 	 */
 	protected function read()
 	{
-		$sql = "SELECT *
-				FROM `oauth_provider_consumer`
-				WHERE `consumer_id` = '" . $this->DataStore->real_escape_string($this->consumerId) . "'";
-
-		$result = $this->DataStore->query($sql);
+		$result = $this->DataStore->view("dev_oauth", "getOAuthProviderConsumerByConsumerId", array("stale" => false, limit => 1, "key" => $this->consumerId, "inclusive_end" => true));
 
 		if (!$result) {
 			throw new DataStoreReadException("Couldn't read the consumer data from the datastore");
 		}
 
-		$data 	= $result->fetch_assoc();
-		$result->close();
-
-		return $data;
+		return $result;
 	}
 
 	/**
@@ -134,13 +131,9 @@ class OAuthConsumerModel extends ModelBase
 	 */
 	protected function update()
 	{
-		$sql = "UPDATE `oauth_provider_consumer`
-				SET `consumer_key` = '" . $this->DataStore->real_escape_string($this->consumerKey) . "
-					`consumer_secret` = '" . $this->DataStore->real_escape_string($this->consumerSecret) . "',
-					`consumer_create_date` = '" . $this->DataStore->real_escape_string($this->consumerCreateDate) . "
-				WHERE `consumer_id` = '" . $this->DataStore->real_escape_string($this->consumerId) . "'";
+		$result = $this->DataStore->replace($this->consumerId, json_encode($this));
 
-		if (!$this->DataStore->query($sql)) {
+		if (!$result) {
 			throw new DataStoreUpdateException("Couldn't update the consumer to the datastore");
 		}
 	}
@@ -151,10 +144,9 @@ class OAuthConsumerModel extends ModelBase
 	 */
 	public function delete()
 	{
-		$sql = "DELETE FROM `oauth_provider_consumer`
-				WHERE `consumer_id` = '" . $this->DataStore->real_escape_string($this->consumerId) . "'";
+		$result = $this->DataStore->delete($this->consumerId);
 
-		if (!$this->DataStore->query($sql)) {
+		if (!$result) {
 			throw new DataStoreDeleteException("Couldn't delete the consumer from the datastore");
 		}
 	}
