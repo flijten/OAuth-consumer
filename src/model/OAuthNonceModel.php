@@ -85,7 +85,7 @@ class OAuthNonceModel extends ModelBase implements JsonSerializable
 	 */
 	public function create()
 	{
-		$result = $this->DataStore->add($this->nonce, json_encode($this));
+		$result = $this->DataStore->add($this->nonce, json_encode($this), 60*5);
 
 		if (!$result) {
 			throw new DataStoreCreateException("Couldn't save the nonce to the datastore");
