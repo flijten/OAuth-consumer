@@ -9,9 +9,8 @@ Configuration
 
 1. Make sure you have a Couchbase server running;
 2. Use the files from /src/couchbase views to create the views in your Couchbase bucket;
-3. Create a scheduler that deletes the nonce documents 5 minutes after they are created (Couchbase has a special function for this, but I did not figured out how to do it yet);
-4. Change host, username, password and bucket to your Couchbase details in /src/lib/Configuration.php;
-5. Change the endpoints in /src/example/consumer/config.php.
+3. Change host, username, password and bucket to your Couchbase details in /src/lib/Configuration.php;
+4. Change the endpoints in /src/example/consumer/config.php.
 
 
 Getting Started
