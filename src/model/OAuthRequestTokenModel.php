@@ -34,11 +34,17 @@
  * @license BSD License
  */
 
-class OAuthRequestTokenModel extends ModelBase
+include_once("ModelBase.php");
+
+class OAuthRequestTokenModel extends ModelBase implements JsonSerializable
 {
 
 //OAuth access token specific fields
 
+	/**
+	 * @var string
+	 */
+	private $type					= "oauth_provider_request_token";
 	/**
 	 * @var int
 	 */
@@ -76,6 +82,22 @@ class OAuthRequestTokenModel extends ModelBase
 	 */
 	private $tokenScope				= null;
 
+    public function jsonSerialize() {
+        return [
+            "type" => $this->type,
+            "request_token_id" => $this->tokenId,
+            "request_token" => $this->token,
+            "request_token_secret" => $this->tokenSecret,
+            "request_token_verification_code" => $this->tokenVerificationCode,
+            "request_token_user_id" => $this->tokenUserId,
+            "request_token_date" => $this->tokenDate,
+            "request_token_consumer_key" => $this->tokenConsumerKey,
+            "request_token_callback" => $this->tokenCallback,
+            "request_token_scope" => $this->tokenScope
+        ];
+    }
+
+
 //methods
 
 	/**
@@ -90,29 +112,22 @@ class OAuthRequestTokenModel extends ModelBase
 	 */
 	public static function loadFromToken($token, $DataStore)
 	{
-		$sql = "SELECT *
-				FROM `oauth_provider_request_token`
-				WHERE `request_token` = '" . $DataStore->real_escape_string($token) . "'";
+		$result = $DataStore->view("dev_oauth", "getOAuthProviderRequestTokenByRequestToken", array("stale" => false, "limit" => 1, "key" => $token , "inclusive_end" => true));
 
-		$result = $DataStore->query($sql);
-
-		if (!$result || $result->num_rows < 1) {
+		if (!$result || count($result["rows"]) < 1) {
 			throw new DataStoreReadException("Couldn't read the request token data from the datastore");
 		}
 
-		$data 	= $result->fetch_assoc();
-		$result->close();
-
 		$RequestToken = new OAuthRequestTokenModel($DataStore);
-		$RequestToken->tokenId = $data['request_token_id'];
-		$RequestToken->token = $data['request_token'];
-		$RequestToken->tokenSecret = $data['request_token_secret'];
-		$RequestToken->tokenVerificationCode = $data['request_token_verification_code'];
-		$RequestToken->tokenUserId = $data['request_token_user_id'];
-		$RequestToken->tokenDate = $data['request_token_date'];
-		$RequestToken->tokenConsumerKey = $data['request_token_consumer_key'];
-		$RequestToken->tokenCallback = $data['request_token_callback'];
-		$RequestToken->tokenScope = $data['request_token_scope'];
+		$RequestToken->tokenId = $result["rows"][0]["value"]['request_token_id'];
+		$RequestToken->token = $result["rows"][0]["value"]['request_token'];
+		$RequestToken->tokenSecret = $result["rows"][0]["value"]['request_token_secret'];
+		$RequestToken->tokenVerificationCode = $result["rows"][0]["value"]['request_token_verification_code'];
+		$RequestToken->tokenUserId = $result["rows"][0]["value"]['request_token_user_id'];
+		$RequestToken->tokenDate = $result["rows"][0]["value"]['request_token_date'];
+		$RequestToken->tokenConsumerKey = $result["rows"][0]["value"]['request_token_consumer_key'];
+		$RequestToken->tokenCallback = $result["rows"][0]["value"]['request_token_callback'];
+		$RequestToken->tokenScope = $result["rows"][0]["value"]['request_token_scope'];
 
 		return $RequestToken;
 	}
@@ -127,20 +142,12 @@ class OAuthRequestTokenModel extends ModelBase
 	 */
 	protected function create()
 	{
-        $user_id = $this->tokenUserId ? "'" . $this->DataStore->real_escape_string($this->tokenUserId) . "'" : 'NULL';
-		$sql = "INSERT INTO `oauth_provider_request_token`
-				SET `request_token` = '" . $this->DataStore->real_escape_string($this->token) . "',
-					`request_token_secret` = '" . $this->DataStore->real_escape_string($this->tokenSecret) . "',
-					`request_token_verification_code` = '" . $this->DataStore->real_escape_string($this->tokenVerificationCode) . "',
-					`request_token_user_id` = $user_id,
-					`request_token_date` = '" . $this->DataStore->real_escape_string($this->tokenDate) . "',
-					`request_token_consumer_key` = '" . $this->DataStore->real_escape_string($this->tokenConsumerKey) . "',
-					`request_token_callback` = '" . $this->DataStore->real_escape_string($this->tokenCallback) . "',
-					`request_token_scope` = '" . $this->DataStore->real_escape_string($this->tokenScope) . "'";
+		$this->tokenId = uniqid();
+		$user_id = $this->tokenUserId ? $this->tokenUserId : 'NULL';
 
-		if ($this->DataStore->query($sql)) {
-			$this->tokenId = $this->DataStore->insert_id;
-		} else {
+		$result = $this->DataStore->add($this->tokenId, json_encode($this));
+
+		if (!$result) {
 			throw new DataStoreReadException("Couldn't create the request token data in the datastore");
 		}
 	}
@@ -153,22 +160,13 @@ class OAuthRequestTokenModel extends ModelBase
 	 */
 	protected function read()
 	{
-		$sql = "SELECT request_token_id`, `request_token`, `request_token_secret`, `request_token_verification_code`,
-					`request_token_user_id`, `request_token_date`, `request_token_consumer_key`, `request_token_callback`,
-					`request_token_scope`
-				FROM `oauth_provider_request_token`
-				WHERE `request_token_id` = '" . $this->DataStore->real_escape_string($this->tokenId) . "'";
-
-		$result = $this->DataStore->query($sql);
+		$result = $this->DataStore->view("dev_oauth", "getOAuthProviderRequestTokenByRequestTokenId", array("stale" => false, limit => 1, "key" => $this->tokenId, "inclusive_end" => true));
 
 		if (!$result) {
-			throw new DataStoreReadException("Couldn't read the request token data from the datastore");
+			throw new DataStoreReadException("Couldn't read the nonce data from the datastore");
 		}
 
-		$data 	= $result->fetch_assoc();
-		$result->close();
-
-		return $data;
+		return $result;
 	}
 
 	/**
@@ -179,19 +177,10 @@ class OAuthRequestTokenModel extends ModelBase
 	 */
 	protected function update()
 	{
-		$sql = "UPDATE `oauth_provider_request_token`
-				SET `request_token` = '" . $this->DataStore->real_escape_string($this->token) . "',
-					`request_token_secret` = '" . $this->DataStore->real_escape_string($this->tokenSecret) . "',
-					`request_token_verification_code` = '" . $this->DataStore->real_escape_string($this->tokenVerificationCode) . "',
-					`request_token_user_id` = '" . $this->DataStore->real_escape_string($this->tokenUserId) . "',
-					`request_token_date` = '" . $this->DataStore->real_escape_string($this->tokenDate) . "',
-					`request_token_consumer_key` = '" . $this->DataStore->real_escape_string($this->tokenConsumerKey) . "',
-					`request_token_callback` = '" . $this->DataStore->real_escape_string($this->tokenCallback) . "',
-					`request_token_scope` = '" . $this->DataStore->real_escape_string($this->tokenScope) . "'
-				WHERE `request_token_id` = '" . $this->DataStore->real_escape_string($this->tokenId) . "'";
+		$result = $this->DataStore->replace($this->tokenId, json_encode($this));
 
-		if (!$this->DataStore->query($sql)) {
-			throw new DataStoreReadException("Couldn't update the request token data in the datastore");
+		if (!$result) {
+			throw new DataStoreUpdateException("Couldn't update the request token to the datastore");
 		}
 	}
 
@@ -203,11 +192,10 @@ class OAuthRequestTokenModel extends ModelBase
 	 */
 	public function delete()
 	{
-		$sql = "DELETE FROM `oauth_provider_request_token`
-				WHERE `request_token_id` = '" . $this->DataStore->real_escape_string($this->tokenId) . "'";
+		$result = $this->DataStore->delete($this->tokenId);
 
-		if (!$this->DataStore->query($sql)) {
-			throw new DataStoreReadException("Couldn't delete the request token data in the datastore");
+		if (!$result) {
+			throw new DataStoreDeleteException("Couldn't delete the request token data in the datastore");
 		}
 	}
 

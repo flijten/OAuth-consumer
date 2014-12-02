@@ -2,6 +2,7 @@
 /**
  * @Author	Freek Lijten
  */
+
 require_once(__DIR__ . '/../../lib/AutoLoader.php');
 new AutoLoader();
 
@@ -18,4 +19,4 @@ try {
 	exit;
 }
 
-echo "Consumer key: " . $Consumer->getConsumerKey() . "<br />Consumer secret: " . $Consumer->getConsumerSecret();
+echo json_encode(array("key" => $Consumer->getConsumerKey(), "secret" => $Consumer->getConsumerSecret()));

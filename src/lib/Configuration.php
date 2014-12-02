@@ -52,9 +52,14 @@ class Configuration
 		static $DataStore;
 
 		if (!isset($DataStore)) {
-			$DataStore = new mysqli('localhost', 'root', '', 'oauth');
+			$host = "10.0.0.1:8091";
+			$username = "";
+			$password = "";
+			$bucket = "oauth-bucket";
 
-			if ($DataStore->connect_error) {
+			$DataStore = new Couchbase($host, $username, $password, $bucket);
+
+			if (!$DataStore) {
 				throw new DataStoreConnectException($DataStore->connect_error);
 				exit;
 			}
