@@ -5,6 +5,8 @@ This repository offers an abstraction around PECL's OAuth class which makes it e
 If you want to start using this immediately, simply follow the minimal setup instructions. If you want to
 adapt the code to suit your own datastore or framework check the customizing section.
 
+There now is a couchbase version in the couchbase branch. I did not create, neither test this but feel free to experiment with this if you like.
+
 
 Notes
 =====
