@@ -1,3 +1,9 @@
+OLD CODE
+==============
+This might still be a usefull example to look at but it is a very old proof of concept I once wrote for a tutorial on OAuth 1 providers. Have a look if you like but do not use in production. For a proper package that allows you to setup an OAuth2 server use: http://oauth2.thephpleague.com/
+
+Thanks for visiting :)
+
 OAuth Provider
 ==============
 
